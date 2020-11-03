@@ -1,8 +1,9 @@
 import os
 
 
-class Config(object):
+class Config:
     """Parent configuration class."""
+    FLASK_ENV = 'production'
     DEBUG = False
     CSRF_ENABLED = True
     SECRET = os.getenv('SECRET_KEY')
@@ -11,6 +12,7 @@ class Config(object):
 
 class DevelopmentConfig(Config):
     """Configurations for Development."""
+    FLASK_ENV = "development"
     DEBUG = True
 
 
