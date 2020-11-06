@@ -5,7 +5,7 @@ import jwt
 from flask import current_app
 
 
-def generate_auth_token(user_id) -> str:
+def generate_auth_token(user_id: int) -> str:
     '''Generates the Auth Token with the given user_id'''
     try:
         payload = {
@@ -22,7 +22,7 @@ def generate_auth_token(user_id) -> str:
         return e
 
 
-def decode_auth_token(auth_token) -> Union[int, str]:
+def decode_auth_token_and_return_sub(auth_token: str) -> Union[int, str]:
     '''Decodes given auth_token and return user_id'''
     try:
         payload = jwt.decode(auth_token, current_app.config.get(

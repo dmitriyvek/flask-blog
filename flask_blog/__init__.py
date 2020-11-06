@@ -17,4 +17,7 @@ def create_app(config_name):
     db.init_app(app)
     migrate.init_app(app, db)
 
+    from flask_blog.users.api.urls import users_blueprint
+    app.register_blueprint(users_blueprint)
+
     return app

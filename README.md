@@ -1,3 +1,3 @@
-# some example information
+# some example flask project
 
-some test flask blog
+some example imfortmation

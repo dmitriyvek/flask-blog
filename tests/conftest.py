@@ -23,3 +23,8 @@ def app():
     with app.app_context():
         db.drop_all()
         db.engine.execute('DROP TABLE alembic_version;')
+
+
+@pytest.fixture
+def client(app):
+    return app.test_client()
