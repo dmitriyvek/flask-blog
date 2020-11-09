@@ -1,0 +1,7 @@
+# add this variables in .env file (next to run.py)
+export FLASK_APP="run.py"
+export SECRET_KEY="some_secret_string"
+export FLASK_ENV="(one of: development, production)"
+export APP_SETTINGS="(one of: development, production, testing, staging)"
+export DATABASE_URL="engine://user:pswd@host:port/table_name"
+export TEST_DATABASE_URL="engine://user:pswd@host:port/table_name"

@@ -6,7 +6,7 @@ class UserDetailSerializer:
 
     def __init__(self, user_id: int):
         user = User.query.filter_by(id=user_id).first()
-        self.data = {
+        self.data: dict = {
             'user_id': user.id,
             'username': user.username,
             'admin': user.admin,
