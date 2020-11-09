@@ -1,10 +1,11 @@
-from flask import request, make_response, jsonify
+from flask import Response, request, make_response, jsonify
 from flask.views import MethodView
-from werkzeug.security import check_password_hash
 
 from flask_blog import db
-from flask_blog.users.models import User
-from flask_blog.users.services import generate_auth_token, decode_auth_token_and_return_sub
+from flask_blog.users.models import User, BlacklistToken
+from flask_blog.users.api.serializers import UserDetailSerializer
+from flask_blog.users.services import generate_auth_token, decode_auth_token_and_return_sub, create_blacklist_token, create_user_and_return_auth_token, check_credentionals_and_get_auth_token
+from flask_blog.users.wrappers import login_required
 
 
 class UserRegisterAPI(MethodView):
@@ -16,19 +17,12 @@ class UserRegisterAPI(MethodView):
 
         if not user:
             try:
-                user = User(
-                    username=post_data.get('username'),
-                    password=post_data.get('password')
-                )
-
-                db.session.add(user)
-                db.session.commit()
-
-                auth_token = generate_auth_token(user.id)
+                auth_token = create_user_and_return_auth_token(
+                    db, data=post_data)
                 response_object = {
                     'status': 'success',
                     'message': 'Successfully registered.',
-                    'auth_token': auth_token.decode('utf-8')
+                    'auth_token': auth_token
                 }
                 return make_response(jsonify(response_object)), 201
 
@@ -53,21 +47,15 @@ class UserLoginAPI(MethodView):
     def post(self):
         post_data = request.get_json()
         try:
-            user = User.query.filter_by(
-                username=post_data.get('username')
-            ).first()
+            auth_token = check_credentionals_and_get_auth_token(data=post_data)
+            if auth_token:
+                response_object = {
+                    'status': 'success',
+                    'message': 'Successfully logged in.',
+                    'auth_token': auth_token
+                }
+                return make_response(jsonify(response_object)), 200
 
-            if user and check_password_hash(
-                user.password, post_data.get('password')
-            ):
-                auth_token = generate_auth_token(user.id)
-                if auth_token:
-                    response_object = {
-                        'status': 'success',
-                        'message': 'Successfully logged in.',
-                        'auth_token': auth_token.decode()
-                    }
-                    return make_response(jsonify(response_object)), 200
             else:
                 response_object = {
                     'status': 'fail',
@@ -86,39 +74,33 @@ class UserLoginAPI(MethodView):
 class UserDetailAPI(MethodView):
     '''User`s detail information resourse'''
 
-    def get(self):
-        auth_header = request.headers.get('Authorization')
-        auth_token = ''
+    @login_required
+    def get(self, user_id: int) -> Response:
+        response_object = {
+            'status': 'success',
+            'data': UserDetailSerializer(user_id).data,
+        }
+        return make_response(jsonify(response_object)), 200
 
-        if auth_header:
-            auth_credentionals = auth_header.split(' ')
-            if auth_credentionals[0] == 'Bearer':
-                auth_token = auth_credentionals[1]
 
-        if auth_token:
-            sub_or_error_message = decode_auth_token_and_return_sub(auth_token)
-            if not isinstance(sub_or_error_message, str):
-                user = User.query.filter_by(id=sub_or_error_message).first()
-                response_object = {
-                    'status': 'success',
-                    'data': {
-                        'user_id': user.id,
-                        'username': user.username,
-                        'admin': user.admin,
-                        'registered_on': user.registered_on
-                    }
-                }
-                return make_response(jsonify(response_object)), 200
+class UserLogoutAPI(MethodView):
+    '''Force token expire by adding it to the blacklist'''
 
-            response_object = {
-                'status': 'fail',
-                'message': sub_or_error_message
+    @login_required
+    def get(self, user_id):
+        auth_token = request.headers.get('Authorization').split(' ')[1]
+
+        try:
+            create_blacklist_token(db, auth_token)
+            responseObject = {
+                'status': 'success',
+                'message': 'Successfully logged out.'
             }
-            return make_response(jsonify(response_object)), 401
+            return make_response(jsonify(responseObject)), 200
 
-        else:
-            response_object = {
+        except Exception as e:
+            responseObject = {
                 'status': 'fail',
-                'message': 'Provide a valid auth credentionals.'
+                'message': e
             }
-            return make_response(jsonify(response_object)), 401
+            return make_response(jsonify(responseObject)), 200

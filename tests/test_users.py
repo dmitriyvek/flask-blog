@@ -3,15 +3,12 @@ import json
 
 from flask_blog import db
 from flask_blog.users.models import User
-# from flask_blog.blog.models import Post
 from flask_blog.users.services import generate_auth_token, decode_auth_token_and_return_sub
 
 
 def test_encode_and_decode_auth_token_and_return_sub(app):
     with app.app_context():
         user = User.query.get(1)
-        # db.session.delete(user)
-        # db.session.commit()
         auth_token = generate_auth_token(user.id)
 
         assert isinstance(auth_token, bytes)
@@ -120,7 +117,6 @@ def test_user_detail_api_after_login(client):
                 'Authorization': f'Bearer {auth_token}',
             }
         )
-
         assert response.status_code == 200
 
         data = json.loads(response.data)
@@ -153,3 +149,30 @@ def test_user_detail_api_after_registration(client):
 
         data = json.loads(response.data)
         assert data['data']['username'] == 'new_user'
+
+
+def test_logout_with_valid_token(client, auth_token):
+    '''Test logout with token before it expires'''
+    with client:
+        response = client.get(
+            '/auth/logout',
+            headers={
+                'Authorization': f'Bearer {auth_token}',
+            })
+        assert response.status_code == 200
+
+        data = json.loads(response.data)
+        assert data['status'] == 'success'
+        assert data['message'] == 'Successfully logged out.'
+
+        # try to log out with blacklisted token
+        response = client.get(
+            '/auth/logout',
+            headers={
+                'Authorization': f'Bearer {auth_token}',
+            })
+        assert response.status_code == 401
+
+        data = json.loads(response.data)
+        assert data['status'] == 'fail'
+        assert data['message'] == 'Token is blacklisted. Please log in again.'

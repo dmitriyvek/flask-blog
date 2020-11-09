@@ -3,9 +3,12 @@ from typing import Union
 
 import jwt
 from flask import current_app
+from werkzeug.security import check_password_hash
+
+from flask_blog.users.models import BlacklistToken, User
 
 
-def generate_auth_token(user_id: int) -> str:
+def generate_auth_token(user_id: int) -> bytes:
     '''Generates the Auth Token with the given user_id'''
     try:
         payload = {
@@ -22,13 +25,58 @@ def generate_auth_token(user_id: int) -> str:
         return e
 
 
+def check_if_token_is_blacklisted(auth_token: str) -> bool:
+    '''Check if auth_token is in the BlacklistToken table'''
+    if BlacklistToken.query.filter_by(token=str(auth_token)).first():
+        return True
+    return False
+
+
 def decode_auth_token_and_return_sub(auth_token: str) -> Union[int, str]:
-    '''Decodes given auth_token and return user_id'''
+    '''Decodes given auth_token and return user_id or error message if token is invalid'''
     try:
         payload = jwt.decode(auth_token, current_app.config.get(
             'SECRET_KEY'), algorithms=['HS256'])
+        token_is_blacklisted = check_if_token_is_blacklisted(auth_token)
+
+        if token_is_blacklisted:
+            return 'Token is blacklisted. Please log in again.'
+
         return payload['sub']
+
     except jwt.ExpiredSignatureError:
         return 'Signature expired. Please log in again.'
     except jwt.InvalidTokenError:
         return 'Invalid token. Please log in again.'
+
+
+def create_blacklist_token(db, auth_token: str) -> None:
+    '''Just creates blacklist token'''
+    blacklist_token = BlacklistToken(token=auth_token)
+    db.session.add(blacklist_token)
+    db.session.commit()
+
+
+def create_user_and_return_auth_token(db, data: dict) -> str:
+    '''Creates new user and return generated auth token for him'''
+    user = User(
+        username=data.get('username'),
+        password=data.get('password')
+    )
+
+    db.session.add(user)
+    db.session.commit()
+
+    return generate_auth_token(user.id).decode('utf-8')
+
+
+def check_credentionals_and_get_auth_token(data: dict) -> Union[str, None]:
+    '''Check if user with given credentionals exist; if it does then returns auth token for him'''
+    user = User.query.filter_by(
+        username=data.get('username')
+    ).first()
+
+    if user and check_password_hash(
+        user.password, data.get('password')
+    ):
+        return generate_auth_token(user.id).decode('utf-8')

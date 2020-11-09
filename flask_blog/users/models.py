@@ -1,3 +1,5 @@
+import datetime
+
 from werkzeug.security import generate_password_hash
 
 from flask_blog import db
@@ -25,3 +27,16 @@ class User(db.Model):
 
     def __repr__(self):
         return f'<User id={self.id}; username={self.username}>'
+
+
+class BlacklistToken(db.Model):
+    '''Model for storing tokens that must no longer be valid'''
+    __tablename__ = 'blacklist_tokens'
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    token = db.Column(db.String(500), unique=True, nullable=False)
+    blacklisted_on = db.Column(
+        db.DateTime, nullable=False, default=db.func.current_timestamp())
+
+    def __repr__(self):
+        return f'<BlacklistedToken id={self.id}>'
