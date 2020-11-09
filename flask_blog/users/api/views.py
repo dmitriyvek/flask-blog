@@ -75,10 +75,10 @@ class UserDetailAPI(MethodView):
     '''User`s detail information resourse'''
 
     @login_required
-    def get(self, user_id: int) -> Response:
+    def get(self):
         response_object = {
             'status': 'success',
-            'data': UserDetailSerializer(user_id).data,
+            'data': UserDetailSerializer(request.user_id).data,
         }
         return make_response(jsonify(response_object)), 200
 
@@ -87,7 +87,7 @@ class UserLogoutAPI(MethodView):
     '''Force token expire by adding it to the blacklist'''
 
     @login_required
-    def get(self, user_id):
+    def get(self):
         auth_token = request.headers.get('Authorization').split(' ')[1]
 
         try:

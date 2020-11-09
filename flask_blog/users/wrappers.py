@@ -8,7 +8,7 @@ from flask_blog.users.services import decode_auth_token_and_return_sub
 
 
 def login_required(func: FunctionType) -> FunctionType:
-    '''Decorator that checks request`s auth header and returns error 401 if there is no token or it is invalid; if token is ok then run given func with user_id in params'''
+    '''Decorator that checks request`s auth header and returns error 401 if there is no token or it is invalid; if token is ok then adds user_id in request and run given function'''
 
     @wraps(func)
     def wrapped_func(*args, **kwargs) -> Union[Response, FunctionType]:
@@ -24,8 +24,8 @@ def login_required(func: FunctionType) -> FunctionType:
             sub_or_error_message = decode_auth_token_and_return_sub(auth_token)
 
             if isinstance(sub_or_error_message, int):
-                user_id = sub_or_error_message
-                return func(*args, **kwargs, user_id=user_id)
+                request.user_id = sub_or_error_message
+                return func(*args, **kwargs)
 
             error_message = sub_or_error_message
             response_object = {
