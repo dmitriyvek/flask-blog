@@ -14,8 +14,8 @@ decorator==4.4.2
 distlib==0.3.0
 distro==1.4.0
 Flask==1.1.2
-# Editable Git install with no remote (flask-blog==0.0.1)
--e /home/dmitriy/1programming/flask-start/myblog
+-e git+git@github.com:dmitriyvek/flask-blog.git@2501ba8a22f5a0a654feb91631952f144fbe9a8d#egg=flask_blog
+flask-marshmallow==0.14.0
 Flask-Migrate==2.5.3
 flask-shell-ipython==0.4.1
 Flask-SQLAlchemy==2.4.4
@@ -31,6 +31,8 @@ Jinja2==2.11.2
 lockfile==0.12.2
 Mako==1.1.3
 MarkupSafe==1.1.1
+marshmallow==3.9.1
+marshmallow-sqlalchemy==0.24.0
 msgpack==0.6.2
 packaging==20.3
 parso==0.7.1

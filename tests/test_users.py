@@ -91,11 +91,11 @@ def test_login_with_not_existed_user(client):
         )
 
         assert response.content_type == 'application/json'
-        assert response.status_code == 404
+        assert response.status_code == 401
 
         data = json.loads(response.data)
         assert data['status'] == 'fail'
-        assert data['message'] == 'User does not exist.'
+        assert data['message'] == 'User with given credentials does not exist.'
 
 
 def test_user_detail_api_after_login(client):
@@ -121,9 +121,9 @@ def test_user_detail_api_after_login(client):
 
         data = json.loads(response.data)
         assert data['status'] == 'success'
-        assert data['data'] is not None
-        assert data['data']['username'] == 'test_user'
-        assert data['data']['admin'] is 'true' or 'false'
+        assert data['user'] is not None
+        assert data['user']['username'] == 'test_user'
+        assert data['user']['admin'] is 'true' or 'false'
 
 
 def test_user_detail_api_after_registration(client):
@@ -148,7 +148,7 @@ def test_user_detail_api_after_registration(client):
         assert response.status_code == 200
 
         data = json.loads(response.data)
-        assert data['data']['username'] == 'new_user'
+        assert data['user']['username'] == 'new_user'
 
 
 def test_logout_with_valid_token(client, auth_token):

@@ -3,29 +3,29 @@ from flask import Blueprint
 from flask_blog.users.api.views import UserRegisterAPI, UserLoginAPI, UserDetailAPI, UserLogoutAPI
 
 
-users_blueprint = Blueprint('auth', __name__)
+users_blueprint = Blueprint('auth', __name__, url_prefix='/auth')
 
 
 users_blueprint.add_url_rule(
-    '/auth/register',
+    '/register',
     view_func=UserRegisterAPI.as_view('register_api'),
     methods=['POST']
 )
 
 users_blueprint.add_url_rule(
-    '/auth/login',
+    '/login',
     view_func=UserLoginAPI.as_view('login_api'),
     methods=['POST']
 )
 
 users_blueprint.add_url_rule(
-    '/auth/detail',
+    '/detail',
     view_func=UserDetailAPI.as_view('detail_api'),
     methods=['GET']
 )
 
 users_blueprint.add_url_rule(
-    '/auth/logout',
+    '/logout',
     view_func=UserLogoutAPI.as_view('logout_api'),
     methods=['GET']
 )

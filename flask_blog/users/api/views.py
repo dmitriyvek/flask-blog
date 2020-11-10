@@ -4,7 +4,7 @@ from flask.views import MethodView
 from flask_blog import db
 from flask_blog.users.models import User, BlacklistToken
 from flask_blog.users.api.serializers import UserDetailSerializer
-from flask_blog.users.services import generate_auth_token, decode_auth_token_and_return_sub, create_blacklist_token, create_user_and_return_auth_token, check_credentionals_and_get_auth_token
+from flask_blog.users.services import generate_auth_token, decode_auth_token_and_return_sub, create_blacklist_token, create_user_and_return_auth_token, check_credentials_and_get_auth_token
 from flask_blog.users.wrappers import login_required
 
 
@@ -47,7 +47,7 @@ class UserLoginAPI(MethodView):
     def post(self):
         post_data = request.get_json()
         try:
-            auth_token = check_credentionals_and_get_auth_token(data=post_data)
+            auth_token = check_credentials_and_get_auth_token(data=post_data)
             if auth_token:
                 response_object = {
                     'status': 'success',
@@ -59,9 +59,9 @@ class UserLoginAPI(MethodView):
             else:
                 response_object = {
                     'status': 'fail',
-                    'message': 'User does not exist.'
+                    'message': 'User with given credentials does not exist.'
                 }
-                return make_response(jsonify(response_object)), 404
+                return make_response(jsonify(response_object)), 401
 
         except Exception as e:
             response_object = {
@@ -76,9 +76,10 @@ class UserDetailAPI(MethodView):
 
     @login_required
     def get(self):
+        user = User.query.get(request.user_id)
         response_object = {
             'status': 'success',
-            'data': UserDetailSerializer(request.user_id).data,
+            'user': UserDetailSerializer().dump(user),
         }
         return make_response(jsonify(response_object)), 200
 

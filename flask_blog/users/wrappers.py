@@ -16,9 +16,9 @@ def login_required(func: FunctionType) -> FunctionType:
         auth_token = ''
 
         if auth_header:
-            auth_credentionals = auth_header.split(' ')
-            if auth_credentionals[0] == 'Bearer':
-                auth_token = auth_credentionals[1]
+            auth_credentials = auth_header.split(' ')
+            if auth_credentials[0] == 'Bearer':
+                auth_token = auth_credentials[1]
 
         if auth_token:
             sub_or_error_message = decode_auth_token_and_return_sub(auth_token)
@@ -37,7 +37,7 @@ def login_required(func: FunctionType) -> FunctionType:
         else:
             response_object = {
                 'status': 'fail',
-                'message': 'Provide a valid auth credentionals.'
+                'message': 'Provide a valid auth credentials.'
             }
             return make_response(jsonify(response_object)), 401
 

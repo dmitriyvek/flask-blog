@@ -3,6 +3,7 @@ from flask_migrate import upgrade
 
 from flask_blog import create_app, db
 from flask_blog.users.models import User
+from flask_blog.blog.models import Post
 from flask_blog.users.services import generate_auth_token
 
 
@@ -16,6 +17,9 @@ def app():
             username='test_user',
             password='test_pswd'
         )
+
+        post = Post(title='test_title', content='test_content', author=user)
+
         db.session.add(user)
         db.session.commit()
 
@@ -32,6 +36,6 @@ def client(app):
 
 
 @pytest.fixture
-def auth_token(app):
+def auth_token(app) -> str:
     with app.app_context():
         return generate_auth_token(user_id=1).decode('utf-8')

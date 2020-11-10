@@ -70,8 +70,8 @@ def create_user_and_return_auth_token(db, data: dict) -> str:
     return generate_auth_token(user.id).decode('utf-8')
 
 
-def check_credentionals_and_get_auth_token(data: dict) -> Union[str, None]:
-    '''Check if user with given credentionals exist; if it does then returns auth token for him'''
+def check_credentials_and_get_auth_token(data: dict) -> Union[str, None]:
+    '''Check if user with given credentials exist; if it does then returns auth token for him'''
     user = User.query.filter_by(
         username=data.get('username')
     ).first()
