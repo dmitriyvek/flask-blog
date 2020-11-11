@@ -1,3 +1,5 @@
+# source .env (before run test)
+
 import pytest
 from flask_migrate import upgrade
 

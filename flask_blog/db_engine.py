@@ -2,6 +2,7 @@ import json
 
 from flask import Response, jsonify, abort
 from flask_sqlalchemy import SQLAlchemy, BaseQuery
+from sqlalchemy.orm.exc import MultipleResultsFound
 
 
 class CustomBaseQuery(BaseQuery):
@@ -14,7 +15,7 @@ class CustomBaseQuery(BaseQuery):
         except Exception as e:
             raise e
 
-        response = self.filter_by(**kwargs).first()
+        response = self.filter_by(**kwargs).all()
         if not response:
             error_message = json.dumps({
                 'status': 'fail',
@@ -22,7 +23,11 @@ class CustomBaseQuery(BaseQuery):
             })
             abort(Response(error_message, 404))
 
-        return response
+        if len(response) > 1:
+            raise MultipleResultsFound(
+                'Get more than one result with given search parameters.')
+
+        return response[0]
 
 
 db = SQLAlchemy(query_class=CustomBaseQuery)
