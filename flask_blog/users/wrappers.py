@@ -2,7 +2,7 @@ from typing import Union
 from types import FunctionType
 from functools import wraps
 
-from flask import Response, request, make_response, jsonify
+from flask import Response, request, make_response
 
 from flask_blog.users.services import decode_auth_token_and_return_sub
 
@@ -32,13 +32,13 @@ def login_required(func: FunctionType) -> FunctionType:
                 'status': 'fail',
                 'message': error_message,
             }
-            return make_response(jsonify(response_object)), 401
+            return make_response(response_object), 401
 
         else:
             response_object = {
                 'status': 'fail',
                 'message': 'Provide a valid auth credentials.'
             }
-            return make_response(jsonify(response_object)), 401
+            return make_response(response_object), 401
 
     return wrapped_func

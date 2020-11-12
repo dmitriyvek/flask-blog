@@ -1,6 +1,6 @@
 import json
 
-from flask import Response, jsonify, abort
+from flask import Response, abort
 from flask_sqlalchemy import SQLAlchemy, BaseQuery
 from sqlalchemy.orm.exc import MultipleResultsFound
 
@@ -16,12 +16,16 @@ class CustomBaseQuery(BaseQuery):
             raise e
 
         response = self.filter_by(**kwargs).all()
-        if not response:
-            error_message = json.dumps({
-                'status': 'fail',
-                'message': 'Item not found',
-            })
-            abort(Response(error_message, 404))
+        try:
+            if not response or response[0].is_deleted:
+                error_message = json.dumps({
+                    'status': 'fail',
+                    'message': 'Item not found',
+                })
+                abort(Response(error_message, 404))
+
+        except AttributeError:
+            print('Warning: that supposed to be a "is_deleted" field on given model.')
 
         if len(response) > 1:
             raise MultipleResultsFound(

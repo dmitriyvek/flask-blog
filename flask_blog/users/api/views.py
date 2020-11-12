@@ -1,4 +1,4 @@
-from flask import Response, request, make_response, jsonify
+from flask import Response, request, make_response
 from flask.views import MethodView
 
 from flask_blog import db
@@ -24,21 +24,21 @@ class UserRegisterAPI(MethodView):
                     'message': 'Successfully registered.',
                     'auth_token': auth_token
                 }
-                return make_response(jsonify(response_object)), 201
+                return make_response(response_object), 201
 
             except Exception as e:
                 response_object = {
                     'status': 'fail',
                     'message': 'Some error occurred. Please try again.'
                 }
-                return make_response(jsonify(response_object)), 401
+                return make_response(response_object), 401
 
         else:
             response_object = {
                 'status': 'fail',
                 'message': 'User already exists. Please Log in.',
             }
-            return make_response(jsonify(response_object)), 202
+            return make_response(response_object), 202
 
 
 class UserLoginAPI(MethodView):
@@ -54,21 +54,21 @@ class UserLoginAPI(MethodView):
                     'message': 'Successfully logged in.',
                     'auth_token': auth_token
                 }
-                return make_response(jsonify(response_object)), 200
+                return make_response(response_object), 200
 
             else:
                 response_object = {
                     'status': 'fail',
                     'message': 'User with given credentials does not exist.'
                 }
-                return make_response(jsonify(response_object)), 401
+                return make_response(response_object), 401
 
         except Exception as e:
             response_object = {
                 'status': 'fail',
                 'message': 'Try again'
             }
-            return make_response(jsonify(response_object)), 500
+            return make_response(response_object), 500
 
 
 class UserDetailAPI(MethodView):
@@ -81,7 +81,7 @@ class UserDetailAPI(MethodView):
             'status': 'success',
             'user': UserDetailSerializer().dump(user),
         }
-        return make_response(jsonify(response_object)), 200
+        return make_response(response_object), 200
 
 
 class UserLogoutAPI(MethodView):
@@ -93,15 +93,15 @@ class UserLogoutAPI(MethodView):
 
         try:
             create_blacklist_token(db, auth_token)
-            responseObject = {
+            response_object = {
                 'status': 'success',
                 'message': 'Successfully logged out.'
             }
-            return make_response(jsonify(responseObject)), 200
+            return make_response(response_object), 200
 
         except Exception as e:
-            responseObject = {
+            response_object = {
                 'status': 'fail',
                 'message': e
             }
-            return make_response(jsonify(responseObject)), 200
+            return make_response(response_object), 200
