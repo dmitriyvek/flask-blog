@@ -1,8 +1,9 @@
 import datetime
+import json
 from typing import Union
 
 import jwt
-from flask import current_app
+from flask import Response, abort, current_app
 from werkzeug.security import check_password_hash
 
 from flask_blog.users.models import BlacklistToken, User
@@ -70,13 +71,31 @@ def create_user_and_return_auth_token(db, data: dict) -> str:
     return generate_auth_token(user.id).decode('utf-8')
 
 
-def check_credentials_and_get_auth_token(data: dict) -> Union[str, None]:
-    '''Check if user with given credentials exist; if it does then returns auth token for him'''
+def check_credentials_and_get_auth_token(data: dict) -> str:
+    '''Check if user with given credentials exist; if it does then returns auth token for him; if it does not then abort 401 Response'''
     user = User.query.filter_by(
         username=data.get('username')
     ).first()
 
-    if user and check_password_hash(
+    if not (user and check_password_hash(
         user.password, data.get('password')
-    ):
-        return generate_auth_token(user.id).decode('utf-8')
+    )):
+        error_message = json.dumps({
+            'status': 'fail',
+            'message': 'User with given credentials does not exist.'
+        })
+        abort(Response(error_message, 401))
+
+    return generate_auth_token(user.id).decode('utf-8')
+
+
+def check_if_user_already_exist(data: dict) -> None:
+    '''Check if user with the given username is already exists. Aborts 202 Response if it does.'''
+    user = User.query.filter_by(username=data.get('username')).first()
+
+    if user:
+        error_message = json.dumps({
+            'status': 'fail',
+            'message': 'User already exists. Please Log in.',
+        })
+        abort(Response(error_message, 202))

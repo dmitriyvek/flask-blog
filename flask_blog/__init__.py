@@ -5,10 +5,12 @@ from flask_migrate import Migrate
 
 from config.settings import app_config
 from flask_blog.db_engine import db
+from flask_blog.loggers import get_main_logger
 
 
 migrate = Migrate()
 ma = Marshmallow()
+generic_logger = get_main_logger()
 
 
 def create_app(config_name):
