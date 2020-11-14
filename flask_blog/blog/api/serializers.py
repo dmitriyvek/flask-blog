@@ -21,3 +21,14 @@ class PostCreationSerializer(ma.SQLAlchemySchema):
         fields = ('title', 'content')
 
     title = fields.Str(required=True, validate=validate.Length(min=1))
+
+
+class PostUpdateSerializer(ma.SQLAlchemySchema):
+    '''Schema for Post update input validation'''
+
+    class Meta:
+        model = Post
+        fields = ('title', 'content')
+
+    title = fields.Str(required=False, validate=validate.Length(min=1))
+    content = fields.Str(required=False)

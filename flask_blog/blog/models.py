@@ -10,7 +10,7 @@ class Post(db.Model):
     created_on = db.Column(db.DateTime, default=db.func.current_timestamp(
     ), comment='DateTime of post creation')
     updated_on = db.Column(
-        db.DateTime, default=db.func.current_timestamp(), onupdate=db.func.current_timestamp(), comment='DateTime of post update')
+        db.DateTime, nullable=True, default=None, onupdate=db.func.current_timestamp(), comment='DateTime of post update')
     is_deleted = db.Column(db.Boolean, nullable=False, default=False,
                            comment='If the post is marked for deletion then it should not be given to the client')
 

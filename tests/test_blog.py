@@ -18,7 +18,8 @@ def test_existed_post_detail_api(app, client, auth_token):
             f'/posts/{post_id}',
             headers={
                 'Authorization': f'Bearer {auth_token}',
-            })
+            }
+        )
         assert response.status_code == 200
         assert response.content_type == 'application/json'
 
@@ -173,3 +174,111 @@ def test_post_create_api_with_empty_title(client, auth_token):
     data = json.loads(response.data)
     assert data['status'] == 'fail'
     assert data['message'] == 'Invalid input.'
+
+
+def test_existed_post_detail_api(app, client, auth_token):
+    '''Test existed post detail view with valid auth token'''
+    post_id = 1
+
+    with client:
+        # set new title and content
+        response = client.put(
+            f'/posts/{post_id}',
+            headers={
+                'Authorization': f'Bearer {auth_token}',
+            },
+            data=json.dumps({
+                'title': 'new_unique_title',
+                'content': 'new_content'
+            }),
+            content_type='application/json'
+        )
+        assert response.status_code == 200
+        assert response.content_type == 'application/json'
+
+        data = json.loads(response.data)
+        assert data['status'] == 'success'
+
+        with app.app_context():
+            post = Post.query.get(post_id)
+
+        assert all(key in data['post']
+                   for key in PostDetailSerializer().__dict__['fields'].keys())
+        assert set(data['post'].values()) == set(
+            PostDetailSerializer().dump(post).values())
+
+        # set only new content
+        response = client.put(
+            f'/posts/{post_id}',
+            headers={
+                'Authorization': f'Bearer {auth_token}',
+            },
+            data=json.dumps({
+                'content': 'new_new_content'
+            }),
+            content_type='application/json'
+        )
+        assert response.status_code == 200
+        assert response.content_type == 'application/json'
+
+        data = json.loads(response.data)
+        assert data['status'] == 'success'
+
+        with app.app_context():
+            post = Post.query.get(post_id)
+
+        assert all(key in data['post']
+                   for key in PostDetailSerializer().__dict__['fields'].keys())
+        assert set(data['post'].values()) == set(
+            PostDetailSerializer().dump(post).values())
+
+        # set only new title
+        response = client.put(
+            f'/posts/{post_id}',
+            headers={
+                'Authorization': f'Bearer {auth_token}',
+            },
+            data=json.dumps({
+                'title': 'new_new_unique_title'
+            }),
+            content_type='application/json'
+        )
+        assert response.status_code == 200
+        assert response.content_type == 'application/json'
+
+        data = json.loads(response.data)
+        assert data['status'] == 'success'
+
+        with app.app_context():
+            post = Post.query.get(post_id)
+
+        assert all(key in data['post']
+                   for key in PostDetailSerializer().__dict__['fields'].keys())
+        assert set(data['post'].values()) == set(
+            PostDetailSerializer().dump(post).values())
+
+        # set the same title
+        response = client.put(
+            f'/posts/{post_id}',
+            headers={
+                'Authorization': f'Bearer {auth_token}',
+            },
+            data=json.dumps({
+                'title': 'new_new_unique_title',
+                'content': '',
+            }),
+            content_type='application/json'
+        )
+        assert response.status_code == 200
+        assert response.content_type == 'application/json'
+
+        data = json.loads(response.data)
+        assert data['status'] == 'success'
+
+        with app.app_context():
+            post = Post.query.get(post_id)
+
+        assert all(key in data['post']
+                   for key in PostDetailSerializer().__dict__['fields'].keys())
+        assert set(data['post'].values()) == set(
+            PostDetailSerializer().dump(post).values())
