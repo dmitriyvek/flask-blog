@@ -26,7 +26,7 @@ def test_registration_with_new_user(client):
             content_type='application/json'
         )
 
-        # assert response.content_type == 'application/json'
+        assert response.content_type == 'application/json'
         assert response.status_code == 201
 
         data = json.loads(response.data)
@@ -49,7 +49,7 @@ def test_registered_with_already_registered_user(client):
         )
 
         assert response.status_code == 202
-        # assert response.content_type == 'application/json'
+        assert response.content_type == 'application/json'
 
         data = json.loads(response.data)
         assert all(key in data for key in ('status', 'message'))
@@ -68,7 +68,7 @@ def test_login_with_registered_user(client):
             content_type='application/json'
         )
 
-        # assert response.content_type == 'application/json'
+        assert response.content_type == 'application/json'
         assert response.status_code == 200
 
         data = json.loads(response.data)
@@ -87,7 +87,7 @@ def test_login_with_not_existed_user(client):
             }),
             content_type='application/json'
         )
-        # assert response.content_type == 'application/json'
+        assert response.content_type == 'application/json'
         assert response.status_code == 401
 
         data = json.loads(response.data)
@@ -115,6 +115,7 @@ def test_user_detail_api_after_login(client):
             }
         )
         assert response.status_code == 200
+        assert response.content_type == 'application/json'
 
         data = json.loads(response.data)
         assert data['status'] == 'success'
@@ -143,6 +144,7 @@ def test_user_detail_api_after_registration(client):
             }
         )
         assert response.status_code == 200
+        assert response.content_type == 'application/json'
 
         data = json.loads(response.data)
         assert data['user']['username'] == 'new_user'
@@ -157,6 +159,7 @@ def test_logout_with_valid_token(client, auth_token):
                 'Authorization': f'Bearer {auth_token}',
             })
         assert response.status_code == 200
+        assert response.content_type == 'application/json'
 
         data = json.loads(response.data)
         assert data['status'] == 'success'
@@ -169,6 +172,7 @@ def test_logout_with_valid_token(client, auth_token):
                 'Authorization': f'Bearer {auth_token}',
             })
         assert response.status_code == 401
+        assert response.content_type == 'application/json'
 
         data = json.loads(response.data)
         assert data['status'] == 'fail'

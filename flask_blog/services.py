@@ -1,7 +1,6 @@
 import os
-import json
 
-from flask import Response, abort
+from flask import abort, make_response, jsonify
 from marshmallow import ValidationError
 
 from flask_blog.loggers import INFO_LOG_FILE_LOCATION, ERROR_LOG_FILE_LOCATION
@@ -19,20 +18,20 @@ def init_logs() -> None:
 def validate_input(data: dict, serializer) -> dict:
     '''Validate given data with given Schema. If data is not valid abort 422 Response or 400 if no data provided.'''
     if not data:
-        error_message = json.dumps({
+        error_message = {
             'status': 'fail',
             'message': 'No data provided.'
-        })
-        abort(Response(error_message, 400))
+        }
+        abort(make_response(jsonify(error_message), 400))
 
     schema = serializer()
     try:
         validate_data = schema.load(data)
     except ValidationError:
-        error_message = json.dumps({
+        error_message = {
             'status': 'fail',
             'message': 'Invalid input.'
-        })
-        abort(Response(error_message, 422))
+        }
+        abort(make_response(jsonify(error_message), 422))
 
     return validate_data

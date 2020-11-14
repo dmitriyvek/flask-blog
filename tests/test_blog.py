@@ -20,6 +20,7 @@ def test_existed_post_detail_api(app, client, auth_token):
                 'Authorization': f'Bearer {auth_token}',
             })
         assert response.status_code == 200
+        assert response.content_type == 'application/json'
 
         data = json.loads(response.data)
         assert data['status'] == 'success'
@@ -41,6 +42,7 @@ def test_nonexisted_post_detail_api(app, client, auth_token):
                 'Authorization': f'Bearer {auth_token}',
             })
         assert response.status_code == 404
+        assert response.content_type == 'application/json'
 
         data = json.loads(response.data)
         assert data['status'] == 'fail'
@@ -60,6 +62,7 @@ def test_post_create_api_with_incorect_credentials(client):
             }
         )
         assert response.status_code == 401
+        assert response.content_type == 'application/json'
 
         data = json.loads(response.data)
         assert data['status'] == 'fail'
@@ -78,6 +81,7 @@ def test_post_create_api_with_incorect_credentials(client):
             content_type='application/json'
         )
         assert response.status_code == 401
+        assert response.content_type == 'application/json'
 
         data = json.loads(response.data)
         assert data['status'] == 'fail'
@@ -98,6 +102,7 @@ def test_post_create_api(app, client, auth_token):
         content_type='application/json'
     )
     assert response.status_code == 201
+    assert response.content_type == 'application/json'
 
     data = json.loads(response.data)
     assert data['status'] == 'success'
@@ -126,6 +131,7 @@ def test_post_create_api_with_existed_title(client, auth_token):
         content_type='application/json'
     )
     assert response.status_code == 400
+    assert response.content_type == 'application/json'
 
     data = json.loads(response.data)
     assert data['status'] == 'fail'
@@ -141,6 +147,7 @@ def test_post_create_api_with_empty_data(client, auth_token):
         },
     )
     assert response.status_code == 400
+    assert response.content_type == 'application/json'
 
     data = json.loads(response.data)
     assert data['status'] == 'fail'
@@ -161,6 +168,7 @@ def test_post_create_api_with_empty_title(client, auth_token):
         content_type='application/json'
     )
     assert response.status_code == 422
+    assert response.content_type == 'application/json'
 
     data = json.loads(response.data)
     assert data['status'] == 'fail'

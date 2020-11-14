@@ -1,6 +1,6 @@
 import json
 
-from flask import Response, abort
+from flask import abort,  make_response, jsonify
 
 from flask_blog import db
 from flask_blog.blog.models import Post
@@ -11,11 +11,11 @@ def check_if_post_is_already_exist(data: dict) -> None:
     '''Check if post with the given title is already exists. Aborts 400 Response if it does.'''
     post = Post.query.filter_by(title=data['title']).first()
     if post:
-        error_message = json.dumps({
+        error_message = {
             'status': 'fail',
             'message': 'Post with given title is already exist.',
-        })
-        abort(Response(error_message, 400))
+        }
+        abort(make_response(jsonify(error_message), 400))
 
 
 def create_and_return_new_post(data: dict, author_id: int) -> Post:

@@ -1,9 +1,8 @@
 import datetime
-import json
 from typing import Union
 
 import jwt
-from flask import Response, abort, current_app
+from flask import abort, current_app, make_response, jsonify
 from werkzeug.security import check_password_hash
 
 from flask_blog.users.models import BlacklistToken, User
@@ -80,11 +79,11 @@ def check_credentials_and_get_auth_token(data: dict) -> str:
     if not (user and check_password_hash(
         user.password, data.get('password')
     )):
-        error_message = json.dumps({
+        error_message = {
             'status': 'fail',
             'message': 'User with given credentials does not exist.'
-        })
-        abort(Response(error_message, 401))
+        }
+        abort(make_response(jsonify(error_message), 401))
 
     return generate_auth_token(user.id).decode('utf-8')
 
@@ -94,8 +93,8 @@ def check_if_user_already_exist(data: dict) -> None:
     user = User.query.filter_by(username=data.get('username')).first()
 
     if user:
-        error_message = json.dumps({
+        error_message = {
             'status': 'fail',
             'message': 'User already exists. Please Log in.',
-        })
-        abort(Response(error_message, 202))
+        }
+        abort(make_response(jsonify(error_message), 202))
