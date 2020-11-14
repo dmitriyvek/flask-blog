@@ -61,3 +61,9 @@ def update_and_return_post(post: Post, data: dict) -> Post:
     post.updated_on = datetime.now()
     db.session.commit()
     return post
+
+
+def mark_post_as_deleted(post: Post) -> None:
+    '''Set Post.is_deleted to True'''
+    post.is_deleted = True
+    db.session.commit()

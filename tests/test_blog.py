@@ -220,6 +220,7 @@ def test_existed_post_update_api(app, client, auth_token, title, title_data, con
 
 
 def test_post_update_with_not_author(app, client):
+    '''Test update post by not author of this post'''
     post_id = 1
     with app.app_context():
         auth_token = generate_auth_token(user_id=2).decode('utf-8')
@@ -241,3 +242,26 @@ def test_post_update_with_not_author(app, client):
         data = json.loads(response.data)
         assert data['status'] == 'fail'
         assert data['message'] == 'You are not allowed to change this resource.'
+
+
+def test_post_delete_api(app, client, auth_token):
+    '''Test post delete api with post\'s author'''
+    post_id = 1
+
+    with client:
+        response = client.delete(
+            f'/posts/{post_id}',
+            headers={
+                'Authorization': f'Bearer {auth_token}',
+            }
+        )
+        assert response.status_code == 200
+        assert response.content_type == 'application/json'
+
+        data = json.loads(response.data)
+        assert data['status'] == 'success'
+        assert data['message'] == 'Item successfully deleted.'
+
+        with app.app_context():
+            post = Post.query.get(post_id)
+            assert post.is_deleted
