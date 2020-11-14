@@ -5,6 +5,7 @@ import json
 from flask_blog import db
 from flask_blog.blog.models import Post
 from flask_blog.blog.api.serializers import PostDetailSerializer
+from flask_blog.users.services import generate_auth_token
 
 
 def test_existed_post_detail_api(app, client, auth_token):
@@ -176,21 +177,31 @@ def test_post_create_api_with_empty_title(client, auth_token):
     assert data['message'] == 'Invalid input.'
 
 
-def test_existed_post_detail_api(app, client, auth_token):
-    '''Test existed post detail view with valid auth token'''
+@pytest.mark.parametrize(('title', 'title_data', 'content', 'content_data'), (
+    (True, 'new_unique_title', True, 'new_content'),
+    (False, '', True, 'new_new_content'),
+    (True, 'new_new_unique_title', True, ''),
+    (True, 'new_new_unique_title', False, ''),
+))
+def test_existed_post_update_api(app, client, auth_token, title, title_data, content, content_data):
+    '''Test existed post update view with valid auth token'''
     post_id = 1
+    data = {
+        'title': title_data,
+        'content': content_data
+    } if title and content else {
+        'title': title_data
+    } if title else {
+        'content': content_data
+    }
 
     with client:
-        # set new title and content
         response = client.put(
             f'/posts/{post_id}',
             headers={
                 'Authorization': f'Bearer {auth_token}',
             },
-            data=json.dumps({
-                'title': 'new_unique_title',
-                'content': 'new_content'
-            }),
+            data=json.dumps(data),
             content_type='application/json'
         )
         assert response.status_code == 200
@@ -207,78 +218,26 @@ def test_existed_post_detail_api(app, client, auth_token):
         assert set(data['post'].values()) == set(
             PostDetailSerializer().dump(post).values())
 
-        # set only new content
+
+def test_post_update_with_not_author(app, client):
+    post_id = 1
+    with app.app_context():
+        auth_token = generate_auth_token(user_id=2).decode('utf-8')
+
+    with client:
         response = client.put(
             f'/posts/{post_id}',
             headers={
                 'Authorization': f'Bearer {auth_token}',
             },
             data=json.dumps({
-                'content': 'new_new_content'
+                'title': 'some'
             }),
             content_type='application/json'
         )
-        assert response.status_code == 200
+        assert response.status_code == 403
         assert response.content_type == 'application/json'
 
         data = json.loads(response.data)
-        assert data['status'] == 'success'
-
-        with app.app_context():
-            post = Post.query.get(post_id)
-
-        assert all(key in data['post']
-                   for key in PostDetailSerializer().__dict__['fields'].keys())
-        assert set(data['post'].values()) == set(
-            PostDetailSerializer().dump(post).values())
-
-        # set only new title
-        response = client.put(
-            f'/posts/{post_id}',
-            headers={
-                'Authorization': f'Bearer {auth_token}',
-            },
-            data=json.dumps({
-                'title': 'new_new_unique_title'
-            }),
-            content_type='application/json'
-        )
-        assert response.status_code == 200
-        assert response.content_type == 'application/json'
-
-        data = json.loads(response.data)
-        assert data['status'] == 'success'
-
-        with app.app_context():
-            post = Post.query.get(post_id)
-
-        assert all(key in data['post']
-                   for key in PostDetailSerializer().__dict__['fields'].keys())
-        assert set(data['post'].values()) == set(
-            PostDetailSerializer().dump(post).values())
-
-        # set the same title
-        response = client.put(
-            f'/posts/{post_id}',
-            headers={
-                'Authorization': f'Bearer {auth_token}',
-            },
-            data=json.dumps({
-                'title': 'new_new_unique_title',
-                'content': '',
-            }),
-            content_type='application/json'
-        )
-        assert response.status_code == 200
-        assert response.content_type == 'application/json'
-
-        data = json.loads(response.data)
-        assert data['status'] == 'success'
-
-        with app.app_context():
-            post = Post.query.get(post_id)
-
-        assert all(key in data['post']
-                   for key in PostDetailSerializer().__dict__['fields'].keys())
-        assert set(data['post'].values()) == set(
-            PostDetailSerializer().dump(post).values())
+        assert data['status'] == 'fail'
+        assert data['message'] == 'You are not allowed to change this resource.'

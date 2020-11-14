@@ -19,10 +19,14 @@ def app():
             username='test_user',
             password='test_pswd'
         )
+        user2 = User(
+            username='test_user_2',
+            password='test_pswd'
+        )
 
         post = Post(title='test_title', content='test_content', author=user)
 
-        db.session.add(user)
+        db.session.add(user, user2)
         db.session.commit()
 
     yield app
