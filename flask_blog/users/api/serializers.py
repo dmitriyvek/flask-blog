@@ -1,6 +1,7 @@
 from marshmallow import fields, validate
 
 from flask_blog import ma
+from flask_blog.blog.api.serializers import PostListSerializer
 from flask_blog.users.models import User
 
 
@@ -9,7 +10,9 @@ class UserDetailSerializer(ma.SQLAlchemySchema):
 
     class Meta:
         model = User
-        fields = ('id', 'username', 'admin', 'registered_on')
+        fields = ('id', 'username', 'post_list')
+
+    post_list = fields.Nested(PostListSerializer, many=True)
 
 
 class UserCreationSerializer(ma.SQLAlchemySchema):

@@ -4,8 +4,9 @@ from flask.views import MethodView
 from flask_blog import db
 from flask_blog.services import validate_input
 from flask_blog.wrappers import generic_error_logger
+from flask_blog.blog.models import Post
 from flask_blog.users.models import User
-from flask_blog.users.services import create_blacklist_token, create_user_and_return_auth_token, check_credentials_and_get_auth_token, check_if_user_already_exist
+from flask_blog.users.services import create_blacklist_token, create_user_and_return_auth_token, check_credentials_and_get_auth_token, check_if_user_already_exist, get_user_with_post_list
 from flask_blog.users.wrappers import login_required
 from flask_blog.users.api.serializers import UserDetailSerializer, UserCreationSerializer
 
@@ -49,7 +50,7 @@ class UserDetailAPI(MethodView):
 
     @login_required
     def get(self):
-        user = User.query.get(request.user_id)
+        user = get_user_with_post_list(request.user_id)
         response_object = {
             'status': 'success',
             'user': UserDetailSerializer().dump(user),

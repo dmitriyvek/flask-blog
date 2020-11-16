@@ -2,8 +2,10 @@ import pytest
 import json
 
 from flask_blog import db
+from flask_blog.blog.models import Post
 from flask_blog.users.models import User
 from flask_blog.users.services import generate_auth_token, decode_auth_token_and_return_sub
+from flask_blog.users.api.serializers import UserDetailSerializer
 
 
 def test_encode_and_decode_auth_token_and_return_sub(app):
@@ -95,7 +97,7 @@ def test_login_with_not_existed_user(client):
         assert data['message'] == 'User with given credentials does not exist.'
 
 
-def test_user_detail_api_after_login(client):
+def test_user_detail_api_after_login(app, client):
     '''Test access to user detail api with token given after loginig'''
     login_response = client.post(
         '/auth/login',
@@ -119,9 +121,16 @@ def test_user_detail_api_after_login(client):
 
         data = json.loads(response.data)
         assert data['status'] == 'success'
-        assert data['user'] is not None
-        assert data['user']['username'] == 'test_user'
-        assert data['user']['admin'] is 'true' or 'false'
+
+        with app.app_context():
+            user = User.query.get(1)
+            post_list = Post.query.filter(Post.author_id == 1, Post.is_deleted.is_(
+                False)).order_by(Post.created_on.desc()).all()
+            user.post_list = post_list
+
+        assert all(key in data['user']
+                   for key in UserDetailSerializer().__dict__['fields'].keys())
+        assert data['user'] == UserDetailSerializer().dump(user)
 
 
 def test_user_detail_api_after_registration(client):

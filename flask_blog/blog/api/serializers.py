@@ -32,3 +32,13 @@ class PostUpdateSerializer(ma.SQLAlchemySchema):
 
     title = fields.Str(required=False, validate=validate.Length(min=1))
     content = fields.Str(required=False)
+
+
+class PostListSerializer(ma.SQLAlchemySchema):
+    '''Schema for Post list api'''
+
+    class Meta:
+        model = Post
+        fields = ('id', 'title', 'created_on', 'author')
+
+    author = fields.Str(attribute='author.username')

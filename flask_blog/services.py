@@ -1,4 +1,6 @@
 import os
+from types import FunctionType
+from typing import Union, List
 
 from flask import abort, make_response, jsonify
 from marshmallow import ValidationError
@@ -35,3 +37,34 @@ def validate_input(data: dict, serializer) -> dict:
         abort(make_response(jsonify(error_message), 422))
 
     return validate_data
+
+
+def validate_query_param(param: Union[List[str], str], to_type: Union[List[FunctionType], FunctionType], many: bool = False) -> Union[List, Union[int, str]]:
+    '''Casts and returns given query parameters to given types (int or str). If one of the parameters have invalid type aborts 400 Response'''
+    if many and len(param) != len(to_type):
+        raise ValueError(
+            'Param list and to_type list should have same lenght.')
+
+    try:
+        if many:
+            result = []
+            for i in range(len(param)):
+                if param[i]:
+                    result.append(to_type[i](param[i]))
+                else:
+                    result.append(0 if to_type[i] is int else '')
+
+        else:
+            if param:
+                result = to_type(param)
+            else:
+                result = 0 if to_type is int else ''
+
+    except (ValueError, TypeError):
+        error_message = {
+            'status': 'fail',
+            'message': 'Invalid query parameter type.'
+        }
+        abort(make_response(jsonify(error_message), 400))
+
+    return result

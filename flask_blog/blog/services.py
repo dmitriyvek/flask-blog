@@ -1,4 +1,5 @@
 import json
+from typing import List, Tuple, Union
 from datetime import datetime
 
 from flask import abort,  make_response, jsonify
@@ -67,3 +68,23 @@ def mark_post_as_deleted(post: Post) -> None:
     '''Set Post.is_deleted to True'''
     post.is_deleted = True
     db.session.commit()
+
+
+def get_post_list_chunk(last_message_index: Union[int, None], chunk_size: int = 5) -> Tuple[List[Post], Union[int, None]]:
+    '''Returns Post list started from last_message_index with given chunk_sizer and new_last_message_index (may be None if all Post were already given). Also aborts 400 Response if message_index is too big'''
+    if not chunk_size:
+        chunk_size = 5
+
+    post_list = Post.query.filter(Post.is_deleted.is_(False)).order_by(
+        Post.created_on.desc()).all()[last_message_index:last_message_index+chunk_size+1]
+    new_last_message_index = None if len(
+        post_list) <= chunk_size else last_message_index + chunk_size
+
+    if not post_list:
+        error_message = {
+            'status': 'fail',
+            'message': 'Message index is too big. There are not so many posts.'
+        }
+        abort(make_response(jsonify(error_message), 400))
+
+    return post_list[:chunk_size], new_last_message_index

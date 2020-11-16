@@ -19,5 +19,9 @@ class Post(db.Model):
     author = db.relationship('User', backref=db.backref(
         'post_list', lazy=True, cascade="all,delete-orphan"))
 
+    # __mapper_args__ = {
+    #     "order_by": created_on.desc()
+    # }
+
     def __repr__(self):
         return f'<Post id={self.id}; title={self.title}; author_id={self.author_id}>'

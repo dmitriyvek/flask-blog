@@ -57,7 +57,7 @@ def test_post_create_api_with_incorect_credentials(client):
     with client:
         # without auth token
         response = client.post(
-            '/posts/create',
+            '/posts',
             data={
                 'title': 'new_title',
                 'content': 'new_content',
@@ -72,7 +72,7 @@ def test_post_create_api_with_incorect_credentials(client):
 
         # with invalid auth token
         response = client.post(
-            '/posts/create',
+            '/posts',
             headers={
                 'Authorization': 'Bearer incorrect_token',
             },
@@ -93,7 +93,7 @@ def test_post_create_api_with_incorect_credentials(client):
 def test_post_create_api(app, client, auth_token):
     '''Test post create view with correct credentials'''
     response = client.post(
-        '/posts/create',
+        '/posts',
         headers={
             'Authorization': f'Bearer {auth_token}',
         },
@@ -122,7 +122,7 @@ def test_post_create_api(app, client, auth_token):
 def test_post_create_api_with_existed_title(client, auth_token):
     '''Test post create view with correct credentials but with already existed title'''
     response = client.post(
-        '/posts/create',
+        '/posts',
         headers={
             'Authorization': f'Bearer {auth_token}',
         },
@@ -143,7 +143,7 @@ def test_post_create_api_with_existed_title(client, auth_token):
 def test_post_create_api_with_empty_data(client, auth_token):
     '''Test post create view with correct credentials but with empty data'''
     response = client.post(
-        '/posts/create',
+        '/posts',
         headers={
             'Authorization': f'Bearer {auth_token}',
         },
@@ -159,7 +159,7 @@ def test_post_create_api_with_empty_data(client, auth_token):
 def test_post_create_api_with_empty_title(client, auth_token):
     '''Test post create view with correct credentials but with empty title'''
     response = client.post(
-        '/posts/create',
+        '/posts',
         headers={
             'Authorization': f'Bearer {auth_token}',
         },
@@ -215,8 +215,7 @@ def test_existed_post_update_api(app, client, auth_token, title, title_data, con
 
         assert all(key in data['post']
                    for key in PostDetailSerializer().__dict__['fields'].keys())
-        assert set(data['post'].values()) == set(
-            PostDetailSerializer().dump(post).values())
+        assert data['post'] == PostDetailSerializer().dump(post)
 
 
 def test_post_update_with_not_author(app, client):

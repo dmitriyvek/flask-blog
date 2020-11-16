@@ -5,6 +5,7 @@ import jwt
 from flask import abort, current_app, make_response, jsonify
 from werkzeug.security import check_password_hash
 
+from flask_blog.blog.models import Post
 from flask_blog.users.models import BlacklistToken, User
 
 
@@ -98,3 +99,13 @@ def check_if_user_already_exist(data: dict) -> None:
             'message': 'User already exists. Please Log in.',
         }
         abort(make_response(jsonify(error_message), 202))
+
+
+def get_user_with_post_list(user_id: int) -> User:
+    '''Gets user with given id and all user\'s posts. Returns user with post_list in attributes'''
+    user = User.query.get(user_id)
+    post_list = Post.query.filter(Post.author_id == user_id, Post.is_deleted.is_(
+        False)).order_by(Post.created_on.desc()).all()
+    user.post_list = post_list
+
+    return user
