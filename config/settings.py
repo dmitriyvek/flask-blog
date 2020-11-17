@@ -17,6 +17,7 @@ class DevelopmentConfig(Config):
     FLASK_ENV = "development"
     DEBUG = True
     TOKEN_EXPIRATION_TIME = timedelta(days=1)
+    SQLALCHEMY_ECHO = False
 
 
 class TestingConfig(Config):

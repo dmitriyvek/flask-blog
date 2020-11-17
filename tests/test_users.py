@@ -124,9 +124,9 @@ def test_user_detail_api_after_login(app, client):
 
         with app.app_context():
             user = User.query.get(1)
-            post_list = Post.query.filter(Post.author_id == 1, Post.is_deleted.is_(
+            posts = Post.query.filter(Post.author_id == 1, Post.is_deleted.is_(
                 False)).order_by(Post.created_on.desc()).all()
-            user.post_list = post_list
+            user.posts = posts
 
         assert all(key in data['user']
                    for key in UserDetailSerializer().__dict__['fields'].keys())

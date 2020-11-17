@@ -23,9 +23,10 @@ def check_if_post_is_already_exist(title: str) -> None:
 def create_and_return_new_post(data: dict, author_id: int) -> Post:
     '''Creates and returns new Post with given data and author'''
     author = User.query.get(author_id)
+    content = '' if not data.get('content') else data.get('content')
     post = Post(
         title=data['title'],
-        content=data['content'],
+        content=content,
         author=author
     )
 
@@ -71,12 +72,26 @@ def mark_post_as_deleted(post: Post) -> None:
 
 
 def get_post_list_chunk(last_message_index: Union[int, None], chunk_size: int = 5) -> Tuple[List[Post], Union[int, None]]:
-    '''Returns Post list started from last_message_index with given chunk_sizer and new_last_message_index (may be None if all Post were already given). Also aborts 400 Response if message_index is too big'''
+    '''Returns Post list started from last_message_index with given chunk_sizer and new_last_message_index (may be None if all Post were already given). Also aborts 400 Response if message_index is too big or some value is negative'''
+    if last_message_index < 0 or chunk_size < 0:
+        error_message = {
+            'status': 'fail',
+            'message': 'Query parameters must be positive.'
+        }
+        abort(make_response(jsonify(error_message), 400))
+
     if not chunk_size:
         chunk_size = 5
 
-    post_list = Post.query.filter(Post.is_deleted.is_(False)).order_by(
-        Post.created_on.desc()).all()[last_message_index:last_message_index+chunk_size+1]
+        # with_entities(Post.id, Post.title, Post.content).\
+    post_list = db.session.query(Post).\
+        options(db.joinedload(Post.author).load_only(User.username)).\
+        filter(Post.is_deleted.is_(False)).\
+        order_by(Post.created_on.desc()).\
+        limit(last_message_index + chunk_size + 1).\
+        offset(last_message_index).\
+        all()
+
     new_last_message_index = None if len(
         post_list) <= chunk_size else last_message_index + chunk_size
 

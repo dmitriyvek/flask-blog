@@ -104,8 +104,9 @@ def check_if_user_already_exist(data: dict) -> None:
 def get_user_with_post_list(user_id: int) -> User:
     '''Gets user with given id and all user\'s posts. Returns user with post_list in attributes'''
     user = User.query.get(user_id)
-    post_list = Post.query.filter(Post.author_id == user_id, Post.is_deleted.is_(
-        False)).order_by(Post.created_on.desc()).all()
-    user.post_list = post_list
+    user.posts = Post.query.\
+        filter(Post.author_id == user_id, Post.is_deleted.is_(False)).\
+        order_by(Post.created_on.desc()).\
+        all()
 
     return user

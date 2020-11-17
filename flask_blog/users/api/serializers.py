@@ -10,9 +10,9 @@ class UserDetailSerializer(ma.SQLAlchemySchema):
 
     class Meta:
         model = User
-        fields = ('id', 'username', 'post_list')
+        fields = ('id', 'username', 'posts')
 
-    post_list = fields.Nested(PostListSerializer, many=True)
+    posts = fields.Nested(PostListSerializer, many=True)
 
 
 class UserCreationSerializer(ma.SQLAlchemySchema):
