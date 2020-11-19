@@ -29,6 +29,9 @@ def create_app(config_name):
     app.register_blueprint(users_blueprint)
     app.register_blueprint(posts_blueprint)
 
+    from flask_blog.cli_commands import init_db_data
+    app.cli.add_command(init_db_data)
+
     if app.config['DEBUG']:
         DebugToolbarExtension(app)
         DebugAPIExtension(app)

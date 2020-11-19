@@ -29,7 +29,7 @@ def app():
             post = Post(title=i, author=user)
         post.is_deleted = True
 
-        db.session.add(user, user2)
+        db.session.add_all([user, user2])
         db.session.commit()
 
     yield app
