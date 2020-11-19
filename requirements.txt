@@ -3,6 +3,7 @@ appdirs==1.4.3
 attrs==20.2.0
 autopep8==1.5.4
 backcall==0.2.0
+blinker==1.4
 CacheControl==0.12.6
 certifi==2019.11.28
 chardet==3.0.4
@@ -14,7 +15,9 @@ decorator==4.4.2
 distlib==0.3.0
 distro==1.4.0
 Flask==1.1.2
--e git+git@github.com:dmitriyvek/flask-blog.git@2501ba8a22f5a0a654feb91631952f144fbe9a8d#egg=flask_blog
+-e git+git@github.com:dmitriyvek/flask-blog.git@59f6fb5ffb309b0ca8d630a0676c778692afcad5#egg=flask_blog
+Flask-Debug-API==0.1.0
+Flask-DebugToolbar==0.11.0
 flask-marshmallow==0.14.0
 Flask-Migrate==2.5.3
 flask-shell-ipython==0.4.1

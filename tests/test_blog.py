@@ -4,7 +4,7 @@ import json
 
 from flask_blog import db
 from flask_blog.blog.models import Post
-from flask_blog.blog.api.serializers import PostDetailSerializer
+from flask_blog.blog.api.serializers import PostDetailSerializer, PostListSerializer
 from flask_blog.users.services import generate_auth_token
 
 
@@ -264,3 +264,67 @@ def test_post_delete_api(app, client, auth_token):
         with app.app_context():
             post = Post.query.get(post_id)
             assert post.is_deleted
+
+
+@pytest.mark.parametrize(('index', 'chunk'), (
+    ('',  ''),
+    (2,  ''),
+    (2,  2),
+    ('',  2)
+))
+def test_post_list_api(app, client, index, chunk):
+    '''Test post list view with different query params'''
+    url = f'/posts?last_message_index={index}&chunk_size={chunk}' \
+        if index and chunk else \
+        f'/posts?last_message_index={index}' \
+        if index else \
+        f'/posts?chunk_size={chunk}' \
+        if chunk else \
+        f'/posts'
+    response = client.get(url)
+
+    assert response.status_code == 200
+    assert response.content_type == 'application/json'
+
+    data = json.loads(response.data)
+    print(data)
+    assert data['status'] == 'success'
+
+    with app.app_context():
+        post_list = Post.query.\
+            options(db.joinedload(Post.author)).\
+            filter(Post.is_deleted.is_(False)).\
+            order_by(Post.created_on.desc())
+        if chunk and index:
+            post_list = post_list.limit(chunk).offset(index).all()
+        elif index:
+            post_list = post_list.limit(5).offset(index).all()
+        elif chunk:
+            post_list = post_list.limit(chunk).all()
+        else:
+            post_list = post_list.limit(5).all()
+
+    print(PostListSerializer().dump(post_list, many=True))
+    assert len(data['post_list']) == len(
+        PostListSerializer().dump(post_list, many=True))
+
+
+def test_post_list_api_with_invalid_query_params(client):
+    '''Test post list view with too big index and negative param'''
+    response = client.get('/posts?last_message_index=100000')
+
+    assert response.status_code == 400
+    assert response.content_type == 'application/json'
+
+    data = json.loads(response.data)
+    assert data['status'] == 'fail'
+    assert data['message'] == 'Message index is too big. There are not so many posts.'
+
+    response = client.get('/posts?last_message_index=-10')
+
+    assert response.status_code == 400
+    assert response.content_type == 'application/json'
+
+    data = json.loads(response.data)
+    assert data['status'] == 'fail'
+    assert data['message'] == 'Query parameters must be positive.'

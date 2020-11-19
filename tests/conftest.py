@@ -25,6 +25,9 @@ def app():
         )
 
         post = Post(title='test_title', content='test_content', author=user)
+        for i in range(6):
+            post = Post(title=i, author=user)
+        post.is_deleted = True
 
         db.session.add(user, user2)
         db.session.commit()

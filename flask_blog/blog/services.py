@@ -88,7 +88,7 @@ def get_post_list_chunk(last_message_index: Union[int, None], chunk_size: int = 
         options(db.joinedload(Post.author).load_only(User.username)).\
         filter(Post.is_deleted.is_(False)).\
         order_by(Post.created_on.desc()).\
-        limit(last_message_index + chunk_size + 1).\
+        limit(chunk_size + 1).\
         offset(last_message_index).\
         all()
 
