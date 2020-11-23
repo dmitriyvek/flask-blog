@@ -15,13 +15,14 @@ decorator==4.4.2
 distlib==0.3.0
 distro==1.4.0
 Flask==1.1.2
--e git+git@github.com:dmitriyvek/flask-blog.git@59f6fb5ffb309b0ca8d630a0676c778692afcad5#egg=flask_blog
+-e git+git@github.com:dmitriyvek/flask-blog.git@1bc417ae08567f8df7c73066178b61066af07a37#egg=flask_blog
 Flask-Debug-API==0.1.0
 Flask-DebugToolbar==0.11.0
 flask-marshmallow==0.14.0
 Flask-Migrate==2.5.3
 flask-shell-ipython==0.4.1
 Flask-SQLAlchemy==2.4.4
+gunicorn==20.0.4
 html5lib==1.0.1
 idna==2.8
 iniconfig==1.1.1
