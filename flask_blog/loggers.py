@@ -3,9 +3,9 @@ import logging
 
 
 INFO_LOG_FILE_LOCATION = os.path.join(
-    os.path.dirname(os.path.abspath(__file__)), '../log/info.log')
+    os.path.dirname(os.path.abspath(__file__)), '../log/app/info.log')
 ERROR_LOG_FILE_LOCATION = os.path.join(
-    os.path.dirname(os.path.abspath(__file__)), '../log/error.log')
+    os.path.dirname(os.path.abspath(__file__)), '../log/app/error.log')
 
 
 def get_main_logger():
