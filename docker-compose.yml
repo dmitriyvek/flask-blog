@@ -1,0 +1,17 @@
+version: "3.3"
+
+services:
+  myblog:
+    build: .
+    restart: always
+    ports:
+      # - 5432:5432
+      - 8001:8001
+    environment:
+      - "FLAST_APP:${FLASK_APP}"
+      - "SECRET_KEY:${SECRET_KEY}"
+      - "FLASK_ENV:${FLASK_ENV}"
+      - "APP_SETTINGS:${APP_SETTINGS}"
+      - "DATABASE_URL:${DATABASE_URL}"
+      - "INFO_LOG_FILE_LOCATION:${INFO_LOG_FILE_LOCATION}"
+      - "ERROR_LOG_FILE_LOCATION:${ERROR_LOG_FILE_LOCATION}"
