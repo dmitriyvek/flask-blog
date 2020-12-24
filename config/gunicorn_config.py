@@ -1,6 +1,6 @@
 command = '/home/www/code/myblog/env/bin/gunicorn'
 pythonpath = '/home/www/code/myblog'
-bind = '127.0.0.1:8001'
+bind = '0.0.0.0:8001'
 workers = 3
 user = 'www'
 limit_request_fields = 32000

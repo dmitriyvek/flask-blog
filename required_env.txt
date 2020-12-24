@@ -1,4 +1,4 @@
-# add this variables in .env file (next to run.py)
+# add this variables in .env file (next to wsgi.py) [without quotes for docker in ./services/myblog/.docker.myblog.env]
 FLASK_APP="run.py"
 SECRET_KEY="some_secret_string"
 FLASK_ENV="(one of: development, production)"
@@ -7,3 +7,8 @@ DATABASE_URL="engine://user:pswd@host:port/table_name"
 TEST_DATABASE_URL="engine://user:pswd@host:port/table_name"
 INFO_LOG_FILE_LOCATION="unix-like location"
 ERROR_LOG_FILE_LOCATION="unix-like location"
+
+# for ./services/postgres/.docker.postgres.env
+POSTGRES_USER=user
+POSTGRES_PASSWORD=pswd
+POSTGRES_DB=db_name

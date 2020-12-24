@@ -1,7 +1,6 @@
 from flask import Flask
 from flask_debugtoolbar import DebugToolbarExtension
 from flask_debug_api import DebugAPIExtension
-from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 from flask_migrate import Migrate
 

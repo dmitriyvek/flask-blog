@@ -1,17 +1,33 @@
 version: "3.3"
 
+volumes:
+  postgres_data:
+
 services:
   myblog:
-    build: .
+    build:
+      context: .
+      dockerfile: ./services/myblog/Dockerfile
+    depends_on:
+      - db
     restart: always
+    expose:
+      - 8001
+    env_file:
+      - ./services/myblog/.docker.myblog.env
+    # environment:
+    #   - FLASK_APP:${FLASK_APP}
+
+  db:
+    image: postgres:12
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    env_file:
+      - ./services/postgres/.docker.postgres.env
+
+  nginx:
+    build: ./services/nginx
     ports:
-      # - 5432:5432
-      - 8001:8001
-    environment:
-      - "FLAST_APP:${FLASK_APP}"
-      - "SECRET_KEY:${SECRET_KEY}"
-      - "FLASK_ENV:${FLASK_ENV}"
-      - "APP_SETTINGS:${APP_SETTINGS}"
-      - "DATABASE_URL:${DATABASE_URL}"
-      - "INFO_LOG_FILE_LOCATION:${INFO_LOG_FILE_LOCATION}"
-      - "ERROR_LOG_FILE_LOCATION:${ERROR_LOG_FILE_LOCATION}"
+      - 5000:80
+    depends_on:
+      - myblog
