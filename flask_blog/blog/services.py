@@ -95,6 +95,7 @@ def get_post_list_chunk(last_message_index: Union[int, None], chunk_size: int = 
     new_last_message_index = None if len(
         post_list) <= chunk_size else last_message_index + chunk_size
 
+    # TODO: correct response on empty post table
     if not post_list:
         error_message = {
             'status': 'fail',

@@ -3,11 +3,22 @@ version: "3.3"
 volumes:
   postgres_data:
 
+networks:
+  db_network:
+    driver: bridge
+  nginx_network:
+    driver: bridge
+
 services:
   myblog:
     build:
       context: .
       dockerfile: ./services/myblog/Dockerfile
+    image: myblog
+    container_name: myblog
+    networks:
+      - db_network
+      - nginx_network
     depends_on:
       - db
     restart: always
@@ -20,14 +31,22 @@ services:
 
   db:
     image: postgres:12
+    networks:
+      - db_network
+    restart: always
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     env_file:
       - ./services/postgres/.docker.postgres.env
 
   nginx:
-    build: ./services/nginx
+    image: nginx:1.18
+    networks:
+      - nginx_network
+    restart: always
     ports:
       - 5000:80
     depends_on:
       - myblog
+    volumes:
+      - ./services/nginx:/etc/nginx/conf.d
