@@ -1,6 +1,6 @@
 from flask import Blueprint
 
-from flask_blog.users.api.views import UserRegisterAPI, UserLoginAPI, UserDetailAPI, UserLogoutAPI
+from flask_blog.users.api.views import UserRegisterAPI, UserLoginAPI, UserDetailAPI, UserLogoutAPI, UserAccountConfirmationAPI
 
 
 users_blueprint = Blueprint('auth', __name__, url_prefix='/auth')
@@ -27,5 +27,11 @@ users_blueprint.add_url_rule(
 users_blueprint.add_url_rule(
     '/logout',
     view_func=UserLogoutAPI.as_view('logout_api'),
+    methods=['GET']
+)
+
+users_blueprint.add_url_rule(
+    '/account_confirmation',
+    view_func=UserAccountConfirmationAPI.as_view('account_confirmation_api'),
     methods=['GET']
 )

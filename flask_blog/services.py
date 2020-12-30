@@ -29,10 +29,10 @@ def validate_input(data: dict, serializer) -> dict:
     schema = serializer()
     try:
         validate_data = schema.load(data)
-    except ValidationError:
+    except ValidationError as error:
         error_message = {
             'status': 'fail',
-            'message': 'Invalid input.'
+            'message': error.messages
         }
         abort(make_response(jsonify(error_message), 422))
 

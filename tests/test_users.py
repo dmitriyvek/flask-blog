@@ -4,17 +4,17 @@ import json
 from flask_blog import db
 from flask_blog.blog.models import Post
 from flask_blog.users.models import User
-from flask_blog.users.services import generate_auth_token, decode_auth_token_and_return_sub
+from flask_blog.users.services import generate_auth_token, decode_token_and_return_payload
 from flask_blog.users.api.serializers import UserDetailSerializer
 
 
-def test_encode_and_decode_auth_token_and_return_sub(app):
+def test_encode_and_decode_token_and_return_payload(app):
     with app.app_context():
         user = User.query.get(1)
         auth_token = generate_auth_token(user.id)
 
         assert isinstance(auth_token, bytes)
-        assert decode_auth_token_and_return_sub(auth_token) == user.id
+        assert decode_token_and_return_payload(auth_token)['sub'] == user.id
 
 
 def test_registration_with_new_user(client):
@@ -185,4 +185,4 @@ def test_logout_with_valid_token(client, auth_token):
 
         data = json.loads(response.data)
         assert data['status'] == 'fail'
-        assert data['message'] == 'Token is blacklisted. Please log in again.'
+        assert data['message'] == 'Token is expired.'

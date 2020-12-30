@@ -14,6 +14,10 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(255), unique=True, nullable=False,
                          comment='Username used for authentication')
+    email = db.Column(db.String(255), unique=True, nullable=True,
+                      comment='Email used for account confirmation and password reset')
+    is_confirmed = db.Column(db.Boolean, nullable=False, default=False,
+                             comment='Is user email (and so account) confirmed')
     password = db.Column(db.Text, nullable=False,
                          comment='Hashed user password')
     registered_on = db.Column(db.DateTime, default=db.func.current_timestamp(
@@ -26,8 +30,9 @@ class User(db.Model):
     # post_list = db.relationship('Post', backref=db.backref(
     #     'author'), cascade="all, delete")
 
-    def __init__(self, username, password, admin=False):
+    def __init__(self, username, password, admin=False, email=None):
         self.username = username
+        self.email = email
         self.password = generate_password_hash(password)
         self.admin = admin
 

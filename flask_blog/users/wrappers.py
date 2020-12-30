@@ -4,7 +4,7 @@ from functools import wraps
 
 from flask import Response, request, make_response
 
-from flask_blog.users.services import decode_auth_token_and_return_sub
+from flask_blog.users.services import decode_token_and_return_payload
 
 
 def login_required(func: FunctionType) -> FunctionType:
@@ -21,18 +21,9 @@ def login_required(func: FunctionType) -> FunctionType:
                 auth_token = auth_credentials[1]
 
         if auth_token:
-            sub_or_error_message = decode_auth_token_and_return_sub(auth_token)
-
-            if isinstance(sub_or_error_message, int):
-                request.user_id = sub_or_error_message
-                return func(*args, **kwargs)
-
-            error_message = sub_or_error_message
-            response_object = {
-                'status': 'fail',
-                'message': error_message,
-            }
-            return make_response(response_object), 401
+            payload = decode_token_and_return_payload(auth_token)
+            request.user_id = payload['sub']
+            return func(*args, **kwargs)
 
         else:
             response_object = {

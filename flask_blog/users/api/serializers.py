@@ -20,7 +20,12 @@ class UserCreationSerializer(ma.SQLAlchemySchema):
 
     class Meta:
         model = User
-        fields = ('username', 'password')
+        fields = ('username', 'password', 'email')
 
-    username = fields.Str(required=True, validate=validate.Length(min=1))
-    password = fields.Str(required=True, validate=validate.Length(min=6))
+    username = fields.Str(required=True, validate=validate.Length(
+        min=4, error='Username is to short. Must be more than 4 chars long'))
+    email = fields.Str(
+        required=False, validate=validate.Email(error='Not a valid email address')
+    )
+    password = fields.Str(required=True, validate=validate.Length(
+        min=6, error='Password is to short. Must be more than 6 chars long'))

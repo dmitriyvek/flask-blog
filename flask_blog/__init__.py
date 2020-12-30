@@ -2,6 +2,7 @@ from flask import Flask
 from flask_debugtoolbar import DebugToolbarExtension
 from flask_debug_api import DebugAPIExtension
 from flask_marshmallow import Marshmallow
+from flask_mail import Mail
 from flask_migrate import Migrate
 
 from config.settings import app_config
@@ -11,6 +12,7 @@ from flask_blog.loggers import get_main_logger
 
 migrate = Migrate()
 ma = Marshmallow()
+mail = Mail()
 generic_logger = get_main_logger()
 
 
@@ -37,5 +39,8 @@ def create_app(config_name):
         panels = list(app.config['DEBUG_TB_PANELS'])
         panels.append('flask_debug_api.BrowseAPIPanel')
         app.config['DEBUG_TB_PANELS'] = panels
+
+    mail.init_app(app)
+    app.extensions['mail'].debug = app.config['DEBUG']
 
     return app
