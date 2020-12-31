@@ -1,4 +1,5 @@
 import datetime
+from threading import Thread
 from typing import Union
 
 import jwt
@@ -75,6 +76,15 @@ def create_blacklist_token(db, auth_token: str) -> None:
     db.session.commit()
 
 
+def send_async_email(app, message: Message) -> None:
+    '''Helper for sending email in thread'''
+    with app.app_context():
+        try:
+            mail.send(message)
+        except Exception as error:
+            logger.error(error, exc_info=True)
+
+
 def send_confirmation_email(data: dict, user_id: int) -> str:
     '''If registration email was given then send confirmation email with token. Returns corresponding message.'''
     if data.get('email'):
@@ -89,14 +99,15 @@ def send_confirmation_email(data: dict, user_id: int) -> str:
                 html=render_template('email/account_confirmation.html',
                                      username=data.get('username'), confirmation_url=confirmation_url)
             )
-            mail.send(message)
+            Thread(target=send_async_email, args=(
+                current_app._get_current_object(), message)).start()
             return 'An account confirmation message has been sent to your email.'
 
         except Exception as error:
             logger.error(error, exc_info=True)
             return 'There was an error in sending confirmation message on your email.'
 
-    return 'Your new account is unconfirmed. You can set your email and request confirmation.'
+    return 'Your new account is unconfirmed because you did not specify email.'
 
 
 def create_user(db, data: dict) -> dict:
