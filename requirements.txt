@@ -15,7 +15,6 @@ decorator==4.4.2
 distlib==0.3.0
 distro==1.4.0
 Flask==1.1.2
--e git+git@github.com:dmitriyvek/flask-blog.git@b1417320da435a1eab21748c338208454f74b0ee#egg=flask_blog
 Flask-Debug-API==0.1.0
 Flask-DebugToolbar==0.11.0
 Flask-Mail==0.9.1

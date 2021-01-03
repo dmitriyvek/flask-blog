@@ -10,7 +10,6 @@ class Config:
     SECRET_KEY = 'secret'
     TOKEN_EXPIRATION_TIME = timedelta(days=1)
     SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL')
-    SERVER_NAME = os.getenv('SERVER_NAME')
 
     MAIL_SERVER = os.getenv('MAIL_SERVER')
     MAIL_PORT = os.getenv('MAIL_PORT')
