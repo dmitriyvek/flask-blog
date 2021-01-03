@@ -15,8 +15,10 @@ decorator==4.4.2
 distlib==0.3.0
 distro==1.4.0
 Flask==1.1.2
+-e git+git@github.com:dmitriyvek/flask-blog.git@b1417320da435a1eab21748c338208454f74b0ee#egg=flask_blog
 Flask-Debug-API==0.1.0
 Flask-DebugToolbar==0.11.0
+Flask-Mail==0.9.1
 flask-marshmallow==0.14.0
 Flask-Migrate==2.5.3
 flask-shell-ipython==0.4.1
@@ -42,6 +44,7 @@ parso==0.7.1
 pep517==0.8.2
 pexpect==4.8.0
 pickleshare==0.7.5
+pkg-resources==0.0.0
 pluggy==0.13.1
 progress==1.5
 prompt-toolkit==3.0.8
