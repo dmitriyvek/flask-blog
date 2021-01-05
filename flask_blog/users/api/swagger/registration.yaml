@@ -1,0 +1,40 @@
+Endpoint for user account registration.
+---
+definitions:
+  userCreation:
+    type: object
+    properties:
+      username:
+        type: string
+        minLength: 4
+        description: Username of a new user
+      password:
+        type: string
+        minLength: 6
+        description: Expanded message about result of account confirmation
+      email:
+        type: string
+        format: email
+        description: Email for new account confirmation
+    required: ['username', 'password']
+consumes:
+  - application/json
+parameters:
+  - in: body
+    name: user
+    description: The user to create
+    schema:
+      $ref: '#/definitions/userCreation'
+responses:
+  200:
+    description: Succesfull account registration
+    schema:
+      $ref: '#/components/schemas/defaultResponseWithToken'
+  40X:
+    description: Creation of alredy existed user or invalid registration data
+    schema:
+      $ref: '#/components/schemas/clientFail'
+  500:
+    description: Server error
+    schema:
+      $ref: '#/components/schemas/serverFail'

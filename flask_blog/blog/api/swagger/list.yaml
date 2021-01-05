@@ -1,0 +1,45 @@
+Endpoint for post list resource.
+---
+definitions:
+  postListResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: ['success']
+        last_message_index:
+          type: integer
+          minimum: 1
+          nullable: true
+          description: Index of last message in result. None if there is no more posts
+        post_list:
+          type: array
+          items:
+            $ref: '#/components/schemas/postInList'
+parameters:
+  - name: last_message_index
+    in: query
+    schema:
+      type: integer
+      minimum: 1
+    required: false
+    description: Index from which to get the result. If not specified then equal to 0
+  - name: chunk_size
+    in: query
+    schema:
+      type: integer
+      minimum: 1
+    required: false
+    description: The size of result chunk. If not specified then equal to 5
+responses:
+  200:
+    schema:
+      $ref: '#/definitions/postListResponse'
+  40X:
+    description: Invalid post id
+    schema:
+      $ref: '#/components/schemas/clientFail'
+  500:
+    description: Server error
+    schema:
+      $ref: '#/components/schemas/serverFail' 

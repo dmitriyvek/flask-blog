@@ -1,4 +1,5 @@
 from flask import Flask
+from flasgger import Swagger
 from flask_debugtoolbar import DebugToolbarExtension
 from flask_debug_api import DebugAPIExtension
 from flask_marshmallow import Marshmallow
@@ -6,6 +7,7 @@ from flask_mail import Mail
 from flask_migrate import Migrate
 
 from config.settings import app_config
+from config.swagger_conf import template
 from flask_blog.db_engine import db
 from flask_blog.loggers import get_main_logger
 
@@ -13,6 +15,7 @@ from flask_blog.loggers import get_main_logger
 migrate = Migrate()
 ma = Marshmallow()
 mail = Mail()
+swagger = Swagger(template=template)
 generic_logger = get_main_logger()
 
 
@@ -42,5 +45,7 @@ def create_app(config_name):
 
     mail.init_app(app)
     app.extensions['mail'].debug = app.config['DEBUG']
+
+    swagger.init_app(app)
 
     return app

@@ -1,0 +1,31 @@
+Endpoint for user account verification by token in query parameters.
+---
+parameters:
+  - name: token
+    in: query
+    schema:
+      type: string
+    required: true
+    description: Email confirmation jwt token
+SuccessResponse:
+  type: object
+  properties:
+    status:
+      type: string
+      enum: ['success']
+    message:
+      type: string
+  required: ['status', 'message']
+responses:
+  200:
+    description: Succesfull account confirmation
+    schema:
+      $ref: '#/components/schemas/defaultResponse'
+  40X:
+    description: Request with invalid token
+    schema:
+      $ref: '#/components/schemas/clientFail'
+  500:
+    description: Server error
+    schema:
+      $ref: '#/components/schemas/serverFail'

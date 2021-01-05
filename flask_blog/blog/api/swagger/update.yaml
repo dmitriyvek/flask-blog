@@ -1,0 +1,33 @@
+Endpoint for post update resource only by author.
+---
+security:
+  - bearerAuth: []
+consumes:
+  - application/json
+parameters:
+  - $ref: '#/components/parameters/authToken'
+  - $ref: '#/components/parameters/postId'
+  - in: body
+    name: postData
+    description: The data to update in post
+    schema:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+        content:
+          type: string
+responses:
+  200:
+    description: Succesfully update post 
+    schema:
+      $ref: '#/components/schemas/postDetail'
+  40X:
+    description: Invalid auth token
+    schema:
+      $ref: '#/components/schemas/clientFail'
+  500:
+    description: Server error
+    schema:
+      $ref: '#/components/schemas/serverFail'

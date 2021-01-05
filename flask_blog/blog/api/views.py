@@ -1,5 +1,6 @@
 from flask import Response, request, make_response
 from flask.views import MethodView
+from flasgger import swag_from
 
 from flask_blog import db
 from flask_blog.services import validate_input, validate_query_param
@@ -15,6 +16,7 @@ from flask_blog.blog.api.serializers import PostDetailSerializer, PostCreationSe
 class PostDetailUpdateDeleteAPI(MethodView):
     '''Post`s detail, update and delete resourse'''
 
+    @swag_from('swagger/detail.yaml')
     def get(self, post_id):
         post = Post.query.get_object_or_404(id=post_id)
         response_object = {
@@ -24,6 +26,7 @@ class PostDetailUpdateDeleteAPI(MethodView):
         return make_response(response_object), 200
 
     @login_required
+    @swag_from('swagger/update.yaml')
     def put(self, post_id):
         post = check_if_user_is_post_author(request.user_id, post_id)
         post_data = request.get_json()
@@ -38,6 +41,7 @@ class PostDetailUpdateDeleteAPI(MethodView):
         return make_response(response_object), 200
 
     @login_required
+    @swag_from('swagger/delete.yaml')
     def delete(self, post_id):
         post = check_if_user_is_post_author(request.user_id, post_id)
         mark_post_as_deleted(post)
@@ -53,6 +57,7 @@ class PostDetailUpdateDeleteAPI(MethodView):
 class PostListCreateAPI(MethodView):
     '''Post list and creation resourse'''
 
+    @swag_from('swagger/list.yaml')
     def get(self):
         query_params = [request.args.get(
             'last_message_index'), request.args.get('chunk_size')]
@@ -70,6 +75,7 @@ class PostListCreateAPI(MethodView):
         return make_response(response_object), 200
 
     @login_required
+    @swag_from('swagger/create.yaml')
     def post(self):
         post_data = request.get_json()
         data = validate_input(post_data, PostCreationSerializer)

@@ -1,0 +1,38 @@
+Endpoint for user account detail info.
+---
+definitions:
+  userDetail:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: ['success']
+        user:
+          type: object
+          properties:
+            id:
+              type: integer
+              minimum: 1
+            username:
+              type: string
+            posts:
+              type: array
+              items:
+                $ref: '#/components/schemas/postInList'
+security:
+  - bearerAuth: []
+parameters:
+  - $ref: '#/components/parameters/authToken'
+responses:
+  200:
+    description: Succesfull login
+    schema:
+      $ref: '#/definitions/userDetail'
+  40X:
+    description: Invalid auth token
+    schema:
+      $ref: '#/components/schemas/clientFail'
+  500:
+    description: Server error
+    schema:
+      $ref: '#/components/schemas/serverFail' 

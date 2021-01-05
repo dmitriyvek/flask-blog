@@ -21,6 +21,7 @@ class PostCreationSerializer(ma.SQLAlchemySchema):
         fields = ('title', 'content')
 
     title = fields.Str(required=True, validate=validate.Length(min=1))
+    content = fields.Str(required=True)
 
 
 class PostUpdateSerializer(ma.SQLAlchemySchema):

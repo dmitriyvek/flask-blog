@@ -1,0 +1,36 @@
+Endpoint for user login.
+---
+definitions:
+  userLogin:
+    type: object
+    properties:
+      username:
+        type: string
+        minLength: 4
+        description: Username of a new user
+      password:
+        type: string
+        minLength: 6
+        description: Expanded message about result of account confirmation
+    required: ['username', 'password']
+consumes:
+  - application/json
+parameters:
+  - in: body
+    name: user
+    description: The user to login
+    schema:
+      $ref: '#/definitions/userLogin'
+responses:
+  200:
+    description: Succesfull login
+    schema:
+      $ref: '#/components/schemas/defaultResponseWithToken'
+  40X:
+    description: Invalid username or password
+    schema:
+      $ref: '#/components/schemas/clientFail'
+  500:
+    description: Server error
+    schema:
+      $ref: '#/components/schemas/serverFail'

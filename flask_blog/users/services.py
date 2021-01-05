@@ -101,7 +101,7 @@ def send_confirmation_email(data: dict, user_id: int) -> str:
             )
             Thread(target=send_async_email, args=(
                 current_app._get_current_object(), message)).start()
-            return 'An account confirmation message has been sent to your email.'
+            return 'An account confirmation message has been sent to your email. (If there is no message, it may be because smtp.mail.ru not trust your email domain)'
 
         except Exception as error:
             logger.error(error, exc_info=True)

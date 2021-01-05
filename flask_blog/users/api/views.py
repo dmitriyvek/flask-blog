@@ -1,6 +1,7 @@
 from flask import Response, request, make_response
 from flask.views import MethodView
 from flask_mail import Message
+from flasgger import swag_from
 
 from flask_blog import db, mail
 from flask_blog.services import validate_input
@@ -16,6 +17,7 @@ from flask_blog.users.api.serializers import UserDetailSerializer, UserCreationS
 class UserRegisterAPI(MethodView):
     '''User registration resource'''
 
+    @swag_from('swagger/registration.yaml')
     def post(self):
         post_data = request.get_json()
         data = validate_input(post_data, UserCreationSerializer)
@@ -34,6 +36,7 @@ class UserRegisterAPI(MethodView):
 class UserLoginAPI(MethodView):
     '''User login resourse'''
 
+    @swag_from('swagger/login.yaml')
     def post(self):
         post_data = request.get_json()
         auth_token = check_credentials_and_get_auth_token(data=post_data)
@@ -50,6 +53,7 @@ class UserDetailAPI(MethodView):
     '''User`s detail information resourse'''
 
     @login_required
+    @swag_from('swagger/detail.yaml')
     def get(self):
         user = get_user_with_post_list(request.user_id)
         response_object = {
@@ -64,6 +68,7 @@ class UserLogoutAPI(MethodView):
     '''Force token expire by adding it to the blacklist'''
 
     @login_required
+    @swag_from('swagger/logout.yaml')
     def get(self):
         auth_token = request.headers.get('Authorization').split(' ')[1]
 
@@ -79,6 +84,7 @@ class UserLogoutAPI(MethodView):
 class UserAccountConfirmationAPI(MethodView):
     '''User account confirmation resourse (need token in query params)'''
 
+    @swag_from('swagger/confirmation.yaml')
     def get(self):
         token = request.args.get('token')
         if not token:

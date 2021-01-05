@@ -1,0 +1,20 @@
+Endpoint for post deletion only by post author.
+---
+security:
+  - bearerAuth: []
+parameters:
+  - $ref: '#/components/parameters/authToken'
+  - $ref: '#/components/parameters/postId'
+responses:
+  200:
+    description: Succesfull deletion 
+    schema:
+      $ref: '#/components/schemas/defaultResponse'
+  40X:
+    description: Invalid auth token or post id
+    schema:
+      $ref: '#/components/schemas/clientFail'
+  500:
+    description: Server error
+    schema:
+      $ref: '#/components/schemas/serverFail'
