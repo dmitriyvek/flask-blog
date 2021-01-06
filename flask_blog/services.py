@@ -5,16 +5,18 @@ from typing import Union, List
 from flask import abort, make_response, jsonify
 from marshmallow import ValidationError
 
-from flask_blog.loggers import INFO_LOG_FILE_LOCATION, ERROR_LOG_FILE_LOCATION
 
-
-def init_logs() -> None:
+def init_logs(error_log_file_location: str, info_log_file_location: str) -> None:
     '''Creates log files inside log folder if it does not exist (unix only)'''
-    if not os.path.exists(ERROR_LOG_FILE_LOCATION):
-        os.mknod(ERROR_LOG_FILE_LOCATION)
+    if not os.path.exists(error_log_file_location):
+        if not os.path.exists(os.path.split(error_log_file_location)[0]):
+            os.makedirs(os.path.split(error_log_file_location)[0])
+        os.mknod(error_log_file_location)
 
-    if not os.path.exists(INFO_LOG_FILE_LOCATION):
-        os.mknod(INFO_LOG_FILE_LOCATION)
+    if not os.path.exists(info_log_file_location):
+        if not os.path.exists(os.path.split(info_log_file_location)[0]):
+            os.makedirs(os.path.split(info_log_file_location)[0])
+        os.mknod(info_log_file_location)
 
 
 def validate_input(data: dict, serializer) -> dict:
