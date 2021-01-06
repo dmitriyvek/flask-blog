@@ -1,5 +1,5 @@
 # add this variables in .env file (next to wsgi.py) [without quotes for docker in ./services/myblog/.docker.myblog.env]
-FLASK_APP="run.py"
+FLASK_APP="wsgi.py"
 SECRET_KEY="some_secret_string"
 FLASK_ENV="(one of: development, production)"
 APP_SETTINGS="(one of: development, production, testing, staging)"
@@ -9,7 +9,7 @@ INFO_LOG_FILE_LOCATION="unix-like location"
 ERROR_LOG_FILE_LOCATION="unix-like location"
 
 MAIL_SERVER=""
-MAIL_PORT=(int)
+MAIL_PORT=INT
 MAIL_USERNAME=""
 MAIL_PASSWORD=""
 MAIL_DEFAULT_SENDER=""
