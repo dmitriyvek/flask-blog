@@ -1,14 +1,16 @@
 # My example flask blog
 
+There is a link on [swagger](https://blog.dmitriyvek.com/apidocs)
+
 ## Project installation and setup
 
-Getting project`s code:
+Getting project`s code
 
 ```
 git clone https://github.com/dmitriyvek/flask-blog.git flask-blog
 ```
 
-Install all requirements:
+Install all requirements
 
 ```
 cd flask-blog
@@ -18,7 +20,7 @@ pip install -r requirements.txt
 pip install -e .
 ```
 
-Create a .env file in project`s root with given parameters:
+Create a .env file in project`s root with given parameters
 
 ```
 FLASK_APP="wsgi.py"
@@ -37,20 +39,20 @@ MAIL_PASSWORD=""
 MAIL_DEFAULT_SENDER=""
 ```
 
-Change gunicorn configuration:
+Change gunicorn configuration
 
 ```
 vim config/gunicorn_config.py
 vim bin/start_gunicorn.sh
 ```
 
-Create a folder for gunicorn logs (where you specified it):
+Create a folder for gunicorn logs (where you specified it)
 
 ```
 mkdir -p log/gunicorn
 ```
 
-Starting gunicorn server:
+Starting gunicorn server
 
 ```
 ./bin/start_gunicorn.sh
