@@ -241,4 +241,3 @@ pip-selfcheck.json
 log
 .env*
 .docker.*
-nginx.conf
