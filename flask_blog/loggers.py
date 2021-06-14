@@ -11,11 +11,27 @@ ERROR_LOG_FILE_LOCATION = os.path.join(
 
 
 def get_main_logger():
-    '''Return file logger for info and errors'''
-    if not os.path.exists(ERROR_LOG_FILE_LOCATION) \
-            or not os.path.exists(INFO_LOG_FILE_LOCATION):
-        init_logs(ERROR_LOG_FILE_LOCATION, INFO_LOG_FILE_LOCATION)
+    '''
+    If app deployment is based on heroku then 
+    LOG_TO_STDOUT should be specified, 
+    so returns stdout logger.
+    Else returns file logger.
+    '''
+    main_logger = logging.getLogger(__name__)
+
+    if os.getenv('LOG_TO_STDOUT'):
+        stream_handler = logging.StreamHandler()
+        stream_handler.setLevel(logging.INFO)
+        log_formatter = logging.Formatter(
+            "%(asctime)s — %(name)s — %(levelname)s — %(message)s")
+        stream_handler.setFormatter(log_formatter)
+        main_logger.addHandler(stream_handler)
+
     else:
+        if not os.path.exists(ERROR_LOG_FILE_LOCATION) \
+                or not os.path.exists(INFO_LOG_FILE_LOCATION):
+            init_logs(ERROR_LOG_FILE_LOCATION, INFO_LOG_FILE_LOCATION)
+
         log_formatter = logging.Formatter(
             "%(asctime)s — %(name)s — %(levelname)s — %(message)s")
         error_formatter = logging.Formatter(
@@ -29,8 +45,7 @@ def get_main_logger():
         error_handler.setLevel(logging.ERROR)
         error_handler.setFormatter(error_formatter)
 
-        main_logger = logging.getLogger(__name__)
         main_logger.addHandler(info_handler)
         main_logger.addHandler(error_handler)
 
-        return main_logger
+    return main_logger

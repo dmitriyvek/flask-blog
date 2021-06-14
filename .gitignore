@@ -241,3 +241,4 @@ pip-selfcheck.json
 log
 .env*
 .docker.*
+heroku.env

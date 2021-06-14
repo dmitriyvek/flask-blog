@@ -18,7 +18,6 @@ distro==1.4.0
 flake8==3.9.2
 flasgger==0.9.5
 Flask==1.1.2
--e git+git@github.com:dmitriyvek/flask-blog.git@5f89c53a0fe1b844e2afe241cd6e8757af70e313#egg=flask_blog
 Flask-Debug-API==0.1.0
 Flask-DebugToolbar==0.11.0
 Flask-Mail==0.9.1
