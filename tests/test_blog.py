@@ -4,12 +4,17 @@ import json
 
 from flask_blog import db
 from flask_blog.blog.models import Post
-from flask_blog.blog.api.serializers import PostDetailSerializer, PostListSerializer
+from flask_blog.blog.api.serializers import (
+    PostDetailSerializer,
+    PostListSerializer,
+)
 from flask_blog.users.services import generate_auth_token
 
 
 def test_existed_post_detail_api(app, client, auth_token):
-    '''Test existed post detail view with valid auth token'''
+    '''
+    Test existed post detail view with valid auth token.
+    '''
     post_id = 1
     with app.app_context():
         post = Post.query.get(post_id)
@@ -27,14 +32,18 @@ def test_existed_post_detail_api(app, client, auth_token):
         data = json.loads(response.data)
         assert data['status'] == 'success'
 
-        assert all(key in data['post']
-                   for key in PostDetailSerializer().__dict__['fields'].keys())
+        assert all(
+            key in data['post']
+            for key in PostDetailSerializer().__dict__['fields'].keys()
+        )
         assert set(data['post'].values()) == set(
             PostDetailSerializer().dump(post).values())
 
 
 def test_nonexisted_post_detail_api(app, client, auth_token):
-    '''Test existed post detail view with valid auth token'''
+    '''
+    Test existed post detail view with valid auth token.
+    '''
     nonexisted_post_id = 100
 
     with client:
@@ -52,7 +61,9 @@ def test_nonexisted_post_detail_api(app, client, auth_token):
 
 
 def test_post_create_api_with_incorect_credentials(client):
-    '''Test post create view with not token provided and with invalid one'''
+    '''
+    Test post create view with not token provided and with invalid one.
+    '''
 
     with client:
         # without auth token
@@ -108,8 +119,10 @@ def test_post_create_api(app, client, auth_token):
 
     data = json.loads(response.data)
     assert data['status'] == 'success'
-    assert all(key in data['post']
-               for key in PostDetailSerializer().__dict__['fields'].keys())
+    assert all(
+        key in data['post']
+        for key in PostDetailSerializer().__dict__['fields'].keys()
+    )
 
     post_id = data['post']['id']
     with app.app_context():
@@ -120,7 +133,10 @@ def test_post_create_api(app, client, auth_token):
 
 
 def test_post_create_api_with_existed_title(client, auth_token):
-    '''Test post create view with correct credentials but with already existed title'''
+    '''
+    Test post create view with correct credentials
+    but with already existed title.
+    '''
     response = client.post(
         '/posts',
         headers={
@@ -141,7 +157,9 @@ def test_post_create_api_with_existed_title(client, auth_token):
 
 
 def test_post_create_api_with_empty_data(client, auth_token):
-    '''Test post create view with correct credentials but with empty data'''
+    '''
+    Test post create view with correct credentials but with empty data.
+    '''
     response = client.post(
         '/posts',
         headers={
@@ -157,7 +175,9 @@ def test_post_create_api_with_empty_data(client, auth_token):
 
 
 def test_post_create_api_with_empty_title(client, auth_token):
-    '''Test post create view with correct credentials but with empty title'''
+    '''
+    Test post create view with correct credentials but with empty title.
+    '''
     response = client.post(
         '/posts',
         headers={
@@ -177,14 +197,26 @@ def test_post_create_api_with_empty_title(client, auth_token):
     assert 'message' in data
 
 
-@pytest.mark.parametrize(('title', 'title_data', 'content', 'content_data'), (
-    (True, 'new_unique_title', True, 'new_content'),
-    (False, '', True, 'new_new_content'),
-    (True, 'new_new_unique_title', True, ''),
-    (True, 'new_new_unique_title', False, ''),
-))
-def test_existed_post_update_api(app, client, auth_token, title, title_data, content, content_data):
-    '''Test existed post update view with valid auth token'''
+@pytest.mark.parametrize(
+    ('title', 'title_data', 'content', 'content_data'), (
+        (True, 'new_unique_title', True, 'new_content'),
+        (False, '', True, 'new_new_content'),
+        (True, 'new_new_unique_title', True, ''),
+        (True, 'new_new_unique_title', False, ''),
+    )
+)
+def test_existed_post_update_api(
+    app,
+    client,
+    auth_token,
+    title,
+    title_data,
+    content,
+    content_data
+):
+    '''
+    Test existed post update view with valid auth token.
+    '''
     post_id = 1
     data = {
         'title': title_data,
@@ -213,13 +245,17 @@ def test_existed_post_update_api(app, client, auth_token, title, title_data, con
         with app.app_context():
             post = Post.query.get(post_id)
 
-        assert all(key in data['post']
-                   for key in PostDetailSerializer().__dict__['fields'].keys())
+        assert all(
+            key in data['post']
+            for key in PostDetailSerializer().__dict__['fields'].keys()
+        )
         assert data['post'] == PostDetailSerializer().dump(post)
 
 
 def test_post_update_with_not_author(app, client):
-    '''Test update post by not author of this post'''
+    '''
+    Test update post by not author of this post.
+    '''
     post_id = 1
     with app.app_context():
         auth_token = generate_auth_token(user_id=2).decode('utf-8')
@@ -240,7 +276,8 @@ def test_post_update_with_not_author(app, client):
 
         data = json.loads(response.data)
         assert data['status'] == 'fail'
-        assert data['message'] == 'You are not allowed to change this resource.'
+        assert data['message'] == \
+            'You are not allowed to change this resource.'
 
 
 def test_post_delete_api(app, client, auth_token):
@@ -267,10 +304,10 @@ def test_post_delete_api(app, client, auth_token):
 
 
 @pytest.mark.parametrize(('index', 'chunk'), (
-    ('',  ''),
-    (2,  ''),
-    (2,  2),
-    ('',  2)
+    ('', ''),
+    (2, ''),
+    (2, 2),
+    ('', 2)
 ))
 def test_post_list_api(app, client, index, chunk):
     '''Test post list view with different query params'''
@@ -280,7 +317,7 @@ def test_post_list_api(app, client, index, chunk):
         if index else \
         f'/posts?chunk_size={chunk}' \
         if chunk else \
-        f'/posts'
+        '/posts'
     response = client.get(url)
 
     assert response.status_code == 200
@@ -310,7 +347,9 @@ def test_post_list_api(app, client, index, chunk):
 
 
 def test_post_list_api_with_invalid_query_params(client):
-    '''Test post list view with too big index and negative param'''
+    '''
+    Test post list view with too big index and negative param.
+    '''
     response = client.get('/posts?last_message_index=100000')
 
     assert response.status_code == 400
@@ -318,7 +357,8 @@ def test_post_list_api_with_invalid_query_params(client):
 
     data = json.loads(response.data)
     assert data['status'] == 'fail'
-    assert data['message'] == 'Message index is too big. There are not so many posts.'
+    assert data['message'] == \
+        'Message index is too big. There are not so many posts.'
 
     response = client.get('/posts?last_message_index=-10')
 

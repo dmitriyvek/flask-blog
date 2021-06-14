@@ -6,10 +6,12 @@ from sqlalchemy.orm.exc import MultipleResultsFound
 class CustomBaseQuery(BaseQuery):
 
     def get_object_or_404(self, **kwargs):
-        '''Get object with given parameter from any model; if object does not exist then returns response with 404 status'''
-        model_class_name = ''
+        '''
+        Get object with given parameter from any model;
+        if object does not exist then returns response with 404 status.
+        '''
         try:
-            model_class_name = self._mapper_zero().class_.__name__
+            self._mapper_zero().class_.__name__
         except Exception as e:
             raise e
 
@@ -23,7 +25,10 @@ class CustomBaseQuery(BaseQuery):
                 abort(make_response(jsonify(error_message), 404))
 
         except AttributeError:
-            print('Warning: that supposed to be a "is_deleted" field on given model.')
+            print(
+                'Warning: that supposed to be a "is_deleted" '
+                'field on given model.'
+            )
 
         if len(response) > 1:
             raise MultipleResultsFound(

@@ -1,6 +1,8 @@
 from flask import Blueprint
 
-from flask_blog.blog.api.views import PostDetailUpdateDeleteAPI, PostListCreateAPI
+from flask_blog.blog.api.views import (
+    PostDetailUpdateDeleteAPI, PostListCreateAPI
+)
 
 
 posts_blueprint = Blueprint('posts', __name__, url_prefix='/posts')

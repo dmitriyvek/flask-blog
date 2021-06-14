@@ -12,7 +12,8 @@ ERROR_LOG_FILE_LOCATION = os.path.join(
 
 def get_main_logger():
     '''Return file logger for info and errors'''
-    if not os.path.exists(ERROR_LOG_FILE_LOCATION) or not os.path.exists(INFO_LOG_FILE_LOCATION):
+    if not os.path.exists(ERROR_LOG_FILE_LOCATION) \
+            or not os.path.exists(INFO_LOG_FILE_LOCATION):
         init_logs(ERROR_LOG_FILE_LOCATION, INFO_LOG_FILE_LOCATION)
     else:
         log_formatter = logging.Formatter(

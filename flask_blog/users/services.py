@@ -1,9 +1,15 @@
 import datetime
 from threading import Thread
-from typing import Union
 
 import jwt
-from flask import abort, current_app, render_template, make_response, jsonify, url_for
+from flask import (
+    abort,
+    current_app,
+    make_response,
+    jsonify,
+    render_template,
+    url_for,
+)
 from flask_mail import Message
 from werkzeug.security import check_password_hash
 
@@ -16,10 +22,16 @@ logger = generic_logger
 
 
 def generate_auth_token(user_id: int, email: str = '') -> bytes:
-    '''Generates the Auth Token with the given user_id. If the email was also given then adds it to the payload (the token will be used account confirmation).'''
+    '''
+    Generates the Auth Token with the given user_id.
+    If the email was also given then adds it to the payload
+    (the token will be used account confirmation).
+    '''
     try:
         payload = {
-            'exp': datetime.datetime.utcnow() + current_app.config.get('TOKEN_EXPIRATION_TIME'),
+            'exp':
+            datetime.datetime.utcnow() + current_app.config.get(
+                'TOKEN_EXPIRATION_TIME'),
             'iat': datetime.datetime.utcnow(),
             'sub': user_id,
         }
@@ -44,15 +56,22 @@ def check_if_token_is_blacklisted(token: str) -> None:
         abort(make_response(jsonify(error_message), 401))
 
 
-def decode_token_and_return_payload(token: str, is_auth: bool = True) -> dict:
-    '''Decodes given token and return payload or abort 401 error message if token is invalid.'''
+def decode_token_and_return_payload(
+    token: str,
+    is_auth: bool = True
+) -> dict:
+    '''
+    Decodes given token and return payload or
+    abort 401 error message if token is invalid.
+    '''
     try:
         payload = jwt.decode(token, current_app.config.get(
             'SECRET_KEY'), algorithms=['HS256'])
         check_if_token_is_blacklisted(token)
 
         # if acoount confirmation token is used
-        if (is_auth and payload.get('email')) or (not is_auth and not payload.get('email')):
+        if (is_auth and payload.get('email')) or \
+                (not is_auth and not payload.get('email')):
             error_message = {
                 'status': 'fail',
                 'message': 'Invalid auth token is used.'
@@ -64,7 +83,8 @@ def decode_token_and_return_payload(token: str, is_auth: bool = True) -> dict:
     except (jwt.ExpiredSignatureError, jwt.InvalidTokenError) as error:
         error_message = {
             'status': 'fail',
-            'message': 'Signature expired.' if error is jwt.ExpiredSignatureError else 'Invalid token.'
+            'message': 'Signature expired.'
+            if error is jwt.ExpiredSignatureError else 'Invalid token.'
         }
         abort(make_response(jsonify(error_message), 401))
 
@@ -86,32 +106,48 @@ def send_async_email(app, message: Message) -> None:
 
 
 def send_confirmation_email(data: dict, user_id: int) -> str:
-    '''If registration email was given then send confirmation email with token. Returns corresponding message.'''
+    '''
+    If registration email was given then send confirmation
+    email with token. Returns corresponding message.
+    '''
     if data.get('email'):
         try:
             confiramtion_token = generate_auth_token(
                 user_id=user_id, email=data.get('email'))
             confirmation_url = url_for(
-                'auth.account_confirmation_api', token=confiramtion_token, _external=True)
+                'auth.account_confirmation_api',
+                token=confiramtion_token,
+                _external=True
+            )
             message = Message(
                 'Account confirmation',
                 recipients=[data.get('email')],
-                html=render_template('email/account_confirmation.html',
-                                     username=data.get('username'), confirmation_url=confirmation_url)
+                html=render_template(
+                    'email/account_confirmation.html',
+                    username=data.get('username'),
+                    confirmation_url=confirmation_url
+                )
             )
             Thread(target=send_async_email, args=(
                 current_app._get_current_object(), message)).start()
-            return 'An account confirmation message has been sent to your email. (If there is no message, it may be because smtp.mail.ru not trust your email domain)'
+            return 'An account confirmation message has been sent to '
+            'your email. (If there is no message, it may be because '
+            'smtp.mail.ru not trust your email domain)'
 
         except Exception as error:
             logger.error(error, exc_info=True)
-            return 'There was an error in sending confirmation message on your email.'
+            return 'There was an error in sending '
+            'confirmation message on your email.'
 
-    return 'Your new account is unconfirmed because you did not specify email.'
+    return 'Your new account is unconfirmed '
+    'because you did not specify email.'
 
 
 def create_user(db, data: dict) -> dict:
-    '''Creates new user. Returns generated auth token and message about account confirmation (send email message if email was given).'''
+    '''
+    Creates new user. Returns generated auth token and message
+    about account confirmation (send email message if email was given).
+    '''
     user = User(
         username=data.get('username'),
         email=data.get('email'),
@@ -128,7 +164,11 @@ def create_user(db, data: dict) -> dict:
 
 
 def check_credentials_and_get_auth_token(data: dict) -> str:
-    '''Check if user with given credentials exist; if it does then returns auth token for him; if it does not then abort 401 Response'''
+    '''
+    Check if user with given credentials exist;
+    if it does then returns auth token for him;
+    if it does not then abort 401 Response.
+    '''
     user = User.query.filter_by(
         username=data.get('username')
     ).first()
@@ -146,7 +186,10 @@ def check_credentials_and_get_auth_token(data: dict) -> str:
 
 
 def check_if_user_already_exist(data: dict) -> None:
-    '''Check if user with the given username is already exists. Aborts 202 Response if it does.'''
+    '''
+    Check if user with the given username is already exists.
+    Aborts 202 Response if it does.
+    '''
     if data.get('email'):
         user = User.query.filter((User.username == data.get('username')) | (
             User.email == data.get('email'))).first()
@@ -162,7 +205,10 @@ def check_if_user_already_exist(data: dict) -> None:
 
 
 def get_user_with_post_list(user_id: int) -> User:
-    '''Gets user with given id and all user\'s posts. Returns user with post_list in attributes'''
+    '''
+    Gets user with given id and all user\'s posts.
+    Returns user with post_list in attributes.
+    '''
     user = User.query.get(user_id)
     user.posts = Post.query.\
         filter(Post.author_id == user_id, Post.is_deleted.is_(False)).\
@@ -173,7 +219,10 @@ def get_user_with_post_list(user_id: int) -> User:
 
 
 def confirm_account_and_blacklist_token(db, data: dict, token: str) -> None:
-    '''Confirm user account and black list token in one transaction. Aborts if email in token != email in table.'''
+    '''
+    Confirm user account and black list token in one transaction.
+    Aborts if email in token != email in table.
+    '''
     user = User.query.get_object_or_404(id=data['sub'])
     if user.email != data['email']:
         error_message = {

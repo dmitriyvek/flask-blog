@@ -1,16 +1,24 @@
-from flask import Response, request, make_response
+from flask import request, make_response
 from flask.views import MethodView
-from flask_mail import Message
 from flasgger import swag_from
 
-from flask_blog import db, mail
+from flask_blog import db
 from flask_blog.services import validate_input
 from flask_blog.wrappers import generic_error_logger
-from flask_blog.blog.models import Post
-from flask_blog.users.models import User
-from flask_blog.users.services import create_blacklist_token, create_user, check_credentials_and_get_auth_token, check_if_user_already_exist, get_user_with_post_list, send_confirmation_email, confirm_account_and_blacklist_token, decode_token_and_return_payload
+from flask_blog.users.services import (
+    check_credentials_and_get_auth_token,
+    check_if_user_already_exist,
+    confirm_account_and_blacklist_token,
+    create_blacklist_token,
+    create_user,
+    decode_token_and_return_payload,
+    get_user_with_post_list,
+)
 from flask_blog.users.wrappers import login_required
-from flask_blog.users.api.serializers import UserDetailSerializer, UserCreationSerializer
+from flask_blog.users.api.serializers import (
+    UserCreationSerializer,
+    UserDetailSerializer,
+)
 
 
 @generic_error_logger
@@ -82,7 +90,9 @@ class UserLogoutAPI(MethodView):
 
 @generic_error_logger
 class UserAccountConfirmationAPI(MethodView):
-    '''User account confirmation resourse (need token in query params)'''
+    '''
+    User account confirmation resourse (need token in query params)
+    '''
 
     @swag_from('swagger/confirmation.yaml')
     def get(self):

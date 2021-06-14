@@ -1,8 +1,7 @@
-import json
 from typing import List, Tuple, Union
 from datetime import datetime
 
-from flask import abort,  make_response, jsonify
+from flask import abort, make_response, jsonify
 
 from flask_blog import db
 from flask_blog.blog.models import Post
@@ -10,7 +9,10 @@ from flask_blog.users.models import User
 
 
 def check_if_post_is_already_exist(title: str) -> None:
-    '''Check if post with the given title is already exists. Aborts 400 Response if it does.'''
+    '''
+    Check if post with the given title is already exists.
+    Aborts 400 Response if it does.
+    '''
     post = Post.query.filter_by(title=title).first()
     if post:
         error_message = {
@@ -37,7 +39,11 @@ def create_and_return_new_post(data: dict, author_id: int) -> Post:
 
 
 def check_if_user_is_post_author(user_id: int, post_id: dict) -> Post:
-    '''Checks if request user is the author of the given Post. If he does then returns this Post, if he does not then abort 403 Response'''
+    '''
+    Checks if request user is the author of the given Post.
+    If he does then returns this Post,
+    if he does not then abort 403 Response.
+    '''
     post = Post.query.get_object_or_404(id=post_id)
 
     if post.author_id != user_id:
@@ -71,8 +77,17 @@ def mark_post_as_deleted(post: Post) -> None:
     db.session.commit()
 
 
-def get_post_list_chunk(last_message_index: Union[int, None], chunk_size: int = 5) -> Tuple[List[Post], Union[int, None]]:
-    '''Returns Post list started from last_message_index with given chunk_sizer and new_last_message_index (may be None if all Post were already given). Also aborts 400 Response if message_index is too big or some value is negative'''
+def get_post_list_chunk(
+    last_message_index: Union[int, None],
+    chunk_size: int = 5
+) -> Tuple[List[Post], Union[int, None]]:
+    '''
+    Returns Post list started from last_message_index with
+    given chunk_sizer and new_last_message_index
+    (may be None if all Post were already given).
+    Also aborts 400 Response if message_index is
+    too big or some value is negative.
+    '''
     if last_message_index < 0 or chunk_size < 0:
         error_message = {
             'status': 'fail',
@@ -99,7 +114,8 @@ def get_post_list_chunk(last_message_index: Union[int, None], chunk_size: int = 
     if not post_list:
         error_message = {
             'status': 'fail',
-            'message': 'Message index is too big. There are not so many posts.'
+            'message': 'Message index is too big. '
+            'There are not so many posts.'
         }
         abort(make_response(jsonify(error_message), 400))
 

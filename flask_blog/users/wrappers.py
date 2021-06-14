@@ -8,7 +8,11 @@ from flask_blog.users.services import decode_token_and_return_payload
 
 
 def login_required(func: FunctionType) -> FunctionType:
-    '''Decorator that checks request\'s authorization header: if it is ok then adds user_id to the request, if it is not then returns 404 response'''
+    '''
+    Decorator that checks request\'s authorization header:
+    if it is ok then adds user_id to the request,
+    if it is not then returns 404 response.
+    '''
 
     @wraps(func)
     def wrapped_func(*args, **kwargs) -> Union[Response, FunctionType]:

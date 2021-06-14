@@ -1,10 +1,8 @@
 import os
 
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 
 from flask_blog import create_app
-from flask_blog.blog import models as blog_models
-from flask_blog.users import models as user_models
 
 
 # load_dotenv()

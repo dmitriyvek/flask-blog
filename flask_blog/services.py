@@ -6,7 +6,10 @@ from flask import abort, make_response, jsonify
 from marshmallow import ValidationError
 
 
-def init_logs(error_log_file_location: str, info_log_file_location: str) -> None:
+def init_logs(
+    error_log_file_location: str,
+    info_log_file_location: str
+) -> None:
     '''Creates log files inside log folder if it does not exist (unix only)'''
     if not os.path.exists(error_log_file_location):
         if not os.path.exists(os.path.split(error_log_file_location)[0]):
@@ -20,7 +23,10 @@ def init_logs(error_log_file_location: str, info_log_file_location: str) -> None
 
 
 def validate_input(data: dict, serializer) -> dict:
-    '''Validate given data with given Schema. If data is not valid abort 422 Response or 400 if no data provided.'''
+    '''
+    Validate given data with given Schema.
+    If data is not valid abort 422 Response or 400 if no data provided.
+    '''
     if not data:
         error_message = {
             'status': 'fail',
@@ -41,8 +47,15 @@ def validate_input(data: dict, serializer) -> dict:
     return validate_data
 
 
-def validate_query_param(param: Union[List[str], str], to_type: Union[List[FunctionType], FunctionType], many: bool = False) -> Union[List, Union[int, str]]:
-    '''Casts and returns given query parameters to given types (int or str). If one of the parameters have invalid type aborts 400 Response'''
+def validate_query_param(
+    param: Union[List[str], str],
+    to_type: Union[List[FunctionType], FunctionType],
+    many: bool = False
+) -> Union[List, Union[int, str]]:
+    '''
+    Casts and returns given query parameters to given types (int or str).
+    If one of the parameters have invalid type aborts 400 Response.
+    '''
     if many and len(param) != len(to_type):
         raise ValueError(
             'Param list and to_type list should have same lenght.')

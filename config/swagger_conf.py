@@ -36,7 +36,8 @@ template = {
                     },
                     'message': {
                         'type': 'string',
-                        'description': 'Expanded message about result of account confirmation'
+                        'description': \
+                        'Expanded message about result of account confirmation'
                     }
                 },
                 'required': [

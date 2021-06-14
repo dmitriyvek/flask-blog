@@ -1,10 +1,11 @@
-import pytest
 import json
 
-from flask_blog import db
 from flask_blog.blog.models import Post
 from flask_blog.users.models import User
-from flask_blog.users.services import generate_auth_token, decode_token_and_return_payload
+from flask_blog.users.services import (
+    decode_token_and_return_payload,
+    generate_auth_token,
+)
 from flask_blog.users.api.serializers import UserDetailSerializer
 
 
@@ -94,11 +95,14 @@ def test_login_with_not_existed_user(client):
 
         data = json.loads(response.data)
         assert data['status'] == 'fail'
-        assert data['message'] == 'User with given credentials does not exist.'
+        assert data['message'] == \
+            'User with given credentials does not exist.'
 
 
 def test_user_detail_api_after_login(app, client):
-    '''Test access to user detail api with token given after loginig'''
+    '''
+    Test access to user detail api with token given after loginig.
+    '''
     login_response = client.post(
         '/auth/login',
         data=json.dumps({
@@ -124,17 +128,27 @@ def test_user_detail_api_after_login(app, client):
 
         with app.app_context():
             user = User.query.get(1)
-            posts = Post.query.filter(Post.author_id == 1, Post.is_deleted.is_(
-                False)).order_by(Post.created_on.desc()).all()
+            posts = Post.\
+                query.\
+                filter(
+                    Post.author_id == 1,
+                    Post.is_deleted.is_(False)
+                ).\
+                order_by(Post.created_on.desc()).\
+                all()
             user.posts = posts
 
-        assert all(key in data['user']
-                   for key in UserDetailSerializer().__dict__['fields'].keys())
+        assert all(
+            key in data['user']
+            for key in UserDetailSerializer().__dict__['fields'].keys()
+        )
         assert data['user'] == UserDetailSerializer().dump(user)
 
 
 def test_user_detail_api_after_registration(client):
-    '''Test access to user detail api with token given after registration'''
+    '''
+    Test access to user detail api with token given after registration.
+    '''
     register_response = client.post(
         '/auth/register',
         data=json.dumps({

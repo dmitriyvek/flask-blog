@@ -7,7 +7,9 @@ from flask_blog import generic_logger
 
 
 def generic_error_handling_wrapper(logger):
-    '''Wrapper for handling all not caught exceptions and log it in given logger'''
+    '''
+    Wrapper for handling all not caught exceptions and log it in given logger.
+    '''
 
     def decorator(function):
 

@@ -1,7 +1,5 @@
 import os
 
-import pytest
-
 from flask_blog import create_app
 
 

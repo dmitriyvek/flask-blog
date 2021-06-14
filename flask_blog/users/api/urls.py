@@ -1,6 +1,12 @@
 from flask import Blueprint
 
-from flask_blog.users.api.views import UserRegisterAPI, UserLoginAPI, UserDetailAPI, UserLogoutAPI, UserAccountConfirmationAPI
+from flask_blog.users.api.views import (
+    UserAccountConfirmationAPI,
+    UserDetailAPI,
+    UserLoginAPI,
+    UserLogoutAPI,
+    UserRegisterAPI,
+)
 
 
 users_blueprint = Blueprint('auth', __name__, url_prefix='/auth')

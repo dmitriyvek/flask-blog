@@ -1,15 +1,25 @@
-from flask import Response, request, make_response
+from flask import request, make_response
 from flask.views import MethodView
 from flasgger import swag_from
 
-from flask_blog import db
 from flask_blog.services import validate_input, validate_query_param
 from flask_blog.wrappers import generic_error_logger
 from flask_blog.blog.models import Post
-from flask_blog.users.models import User
-from flask_blog.blog.services import create_and_return_new_post, check_if_post_is_already_exist, check_if_user_is_post_author, update_and_return_post, mark_post_as_deleted, get_post_list_chunk
+from flask_blog.blog.services import (
+    check_if_post_is_already_exist,
+    check_if_user_is_post_author,
+    create_and_return_new_post,
+    get_post_list_chunk,
+    mark_post_as_deleted,
+    update_and_return_post,
+)
 from flask_blog.users.wrappers import login_required
-from flask_blog.blog.api.serializers import PostDetailSerializer, PostCreationSerializer, PostUpdateSerializer, PostListSerializer
+from flask_blog.blog.api.serializers import (
+    PostCreationSerializer,
+    PostDetailSerializer,
+    PostListSerializer,
+    PostUpdateSerializer,
+)
 
 
 @generic_error_logger
