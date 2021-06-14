@@ -9,7 +9,7 @@ template = {
         },
         'version': '0.0.1'
     },
-    'host': 'blog.dmitriyvek.com',
+    'host': 'www.blog.dmitriyvek.com',
     'basePath': '/',
     'schemes': [
         # 'http',

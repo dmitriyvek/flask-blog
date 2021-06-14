@@ -5,7 +5,7 @@ import os
 from flask_blog import create_app
 
 
-# load_dotenv()
+load_dotenv()
 
 config_name = os.getenv('APP_SETTINGS')
 app = create_app(config_name)
