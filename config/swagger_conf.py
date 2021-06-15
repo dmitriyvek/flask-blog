@@ -1,3 +1,8 @@
+import os
+
+
+SWAGGER_HOST_NAME = os.getenv('SWAGGER_HOST_NAME')
+
 template = {
     'swagger': '2.0',
     'info': {
@@ -9,7 +14,7 @@ template = {
         },
         'version': '0.0.1'
     },
-    'host': 'www.blog.dmitriyvek.com',
+    'host': SWAGGER_HOST_NAME,
     'basePath': '/',
     'schemes': [
         # 'http',

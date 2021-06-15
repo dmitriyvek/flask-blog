@@ -21,7 +21,7 @@ def get_main_logger():
 
     if os.getenv('LOG_TO_STDOUT'):
         stream_handler = logging.StreamHandler()
-        stream_handler.setLevel(logging.INFO)
+        stream_handler.setLevel(logging.ERROR)
         log_formatter = logging.Formatter(
             "%(asctime)s — %(name)s — %(levelname)s — %(message)s")
         stream_handler.setFormatter(log_formatter)

@@ -18,3 +18,6 @@ MAIL_DEFAULT_SENDER=""
 POSTGRES_USER=user
 POSTGRES_PASSWORD=pswd
 POSTGRES_DB=db_name
+
+# for deployment
+SWAGGER_HOST_NAME="(domain name or localhost)"
