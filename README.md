@@ -1,6 +1,6 @@
 # My example flask blog
 
-There is a link on [swagger](https://blog.dmitriyvek.com/apidocs)
+There is a link on [swagger](https://dmitriyvek-blog.herokuapp.com/apidocs/)
 
 ## Project installation and setup
 
