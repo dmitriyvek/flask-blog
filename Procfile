@@ -1,1 +1,1 @@
-web: flask db upgrade; gunicorn -b :$PORT wsgi:app
+web: flask db upgrade; bin/start-nginx  gunicorn -c ./config/gunicorn_heroku_config.py -b :$PORT wsgi:app
